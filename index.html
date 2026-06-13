@@ -4,516 +4,522 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BusinessBoost AI — Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 <style>
-*{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Inter',sans-serif;background:#0a0a0f;color:#e2e2e8;}
+:root {
+  --bg: #2c2c2e;
+  --bg-light: #323234;
+  --bg-dark: #262628;
+  --accent: #e8b86d;
+  --accent-dim: #c49a4e;
+  --text: #f0ece4;
+  --text-muted: #9e9a92;
+  --text-dim: #5e5a54;
+  --neu-shadow: 6px 6px 14px #1e1e20, -4px -4px 10px #3a3a3c;
+  --neu-shadow-sm: 3px 3px 8px #1e1e20, -2px -2px 6px #3a3a3c;
+  --neu-shadow-inset: inset 4px 4px 10px #1e1e20, inset -3px -3px 8px #3a3a3c;
+  --neu-shadow-inset-sm: inset 2px 2px 6px #1e1e20, inset -2px -2px 5px #3a3a3c;
+  --radius: 16px;
+  --radius-sm: 10px;
+  --radius-xs: 6px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
-/* AUTH */
-#auth-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:1rem;}
-.auth-card{background:#11111a;border:0.5px solid #1e1e2e;border-radius:16px;padding:2.5rem;width:100%;max-width:400px;}
-.auth-logo{font-size:18px;font-weight:600;color:#fff;text-align:center;margin-bottom:0.5rem;}
-.auth-logo span{color:#a78bfa;}
-.auth-sub{font-size:13px;color:#555;text-align:center;margin-bottom:2rem;}
-.auth-tabs{display:flex;background:#0a0a0f;border-radius:8px;padding:3px;margin-bottom:1.5rem;}
-.auth-tab{flex:1;padding:8px;font-size:13px;font-weight:500;border:none;background:transparent;color:#555;cursor:pointer;border-radius:6px;transition:all 0.2s;}
-.auth-tab.active{background:#1e1e2e;color:#fff;}
-.auth-input{width:100%;background:#0a0a0f;border:0.5px solid #2a2a3a;border-radius:8px;padding:11px 14px;font-size:14px;color:#e2e2e8;margin-bottom:12px;outline:none;font-family:'Inter',sans-serif;}
-.auth-input:focus{border-color:#7c3aed;}
-.auth-btn{width:100%;background:#7c3aed;color:#fff;border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:500;cursor:pointer;margin-bottom:12px;transition:background 0.2s;}
-.auth-btn:hover{background:#6d28d9;}
-.auth-divider{display:flex;align-items:center;gap:12px;margin:4px 0 12px;font-size:12px;color:#333;}
-.auth-divider::before,.auth-divider::after{content:'';flex:1;height:0.5px;background:#1e1e2e;}
-.google-btn{width:100%;background:transparent;color:#ccc;border:0.5px solid #2a2a3a;border-radius:8px;padding:11px;font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.2s;}
-.google-btn:hover{border-color:#555;color:#fff;}
-.google-btn img{width:16px;height:16px;}
-.auth-error{background:#1a0a0a;border:0.5px solid #3d1515;border-radius:8px;padding:10px 14px;font-size:12px;color:#f87171;margin-bottom:12px;display:none;}
+.neu-card { background: var(--bg); border-radius: var(--radius); box-shadow: var(--neu-shadow); }
+.neu-card-sm { background: var(--bg); border-radius: var(--radius-sm); box-shadow: var(--neu-shadow-sm); }
+.neu-inset { background: var(--bg); border-radius: var(--radius-sm); box-shadow: var(--neu-shadow-inset); }
+.neu-inset-sm { background: var(--bg); border-radius: var(--radius-xs); box-shadow: var(--neu-shadow-inset-sm); }
+.neu-btn { background: var(--bg); border-radius: var(--radius-sm); box-shadow: var(--neu-shadow-sm); border: none; cursor: pointer; color: var(--text); font-family: 'DM Sans', sans-serif; transition: box-shadow 0.15s, transform 0.1s; }
+.neu-btn:hover { box-shadow: 4px 4px 10px #1e1e20, -3px -3px 8px #3a3a3c; }
+.neu-btn:active { box-shadow: var(--neu-shadow-inset-sm); transform: scale(0.98); }
+.neu-btn-accent { background: linear-gradient(135deg, #e8b86d, #c49a4e); color: #1a1a1a; font-weight: 600; border-radius: var(--radius-sm); border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: opacity 0.2s, transform 0.1s; box-shadow: 3px 3px 10px #1a1a1a, -1px -1px 4px #3a3a3c; }
+.neu-btn-accent:hover { opacity: 0.9; }
+.neu-btn-accent:active { transform: scale(0.98); }
 
-/* APP */
-#app-screen{display:none;min-height:100vh;}
-.app-layout{display:flex;min-height:100vh;}
+#auth-screen { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 1.5rem; }
+.auth-wrap { width: 100%; max-width: 420px; }
+.auth-logo { text-align: center; margin-bottom: 2.5rem; }
+.auth-logo h1 { font-family: 'DM Serif Display', serif; font-size: 28px; color: var(--text); font-weight: 400; }
+.auth-logo h1 span { color: var(--accent); }
+.auth-logo p { font-size: 13px; color: var(--text-muted); margin-top: 6px; }
+.auth-card { padding: 2.25rem; }
+.auth-tabs { display: flex; padding: 4px; margin-bottom: 1.75rem; }
+.auth-tab { flex: 1; padding: 9px; font-size: 13px; font-weight: 500; cursor: pointer; border-radius: var(--radius-xs); transition: all 0.2s; color: var(--text-muted); background: transparent; border: none; font-family: 'DM Sans', sans-serif; }
+.auth-tab.active { background: var(--bg-light); color: var(--text); box-shadow: var(--neu-shadow-inset-sm); }
+.auth-field { margin-bottom: 1rem; }
+.auth-field label { font-size: 11px; color: var(--text-muted); font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase; display: block; margin-bottom: 6px; }
+.auth-input { width: 100%; padding: 12px 14px; font-size: 14px; color: var(--text); background: transparent; border: none; outline: none; font-family: 'DM Sans', sans-serif; }
+.auth-input::placeholder { color: var(--text-dim); }
+.auth-submit { width: 100%; padding: 13px; font-size: 14px; margin-top: 0.5rem; border-radius: var(--radius-sm); }
+.auth-divider { display: flex; align-items: center; gap: 12px; margin: 1.25rem 0; font-size: 12px; color: var(--text-dim); }
+.auth-divider::before, .auth-divider::after { content: ''; flex: 1; height: 1px; background: var(--bg-dark); }
+.google-btn { width: 100%; padding: 12px; font-size: 13px; font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 10px; }
+.auth-error { background: #3a1a1a; border-radius: var(--radius-xs); padding: 10px 14px; font-size: 12px; color: #f87171; margin-bottom: 1rem; display: none; box-shadow: var(--neu-shadow-inset-sm); }
 
-/* SIDEBAR */
-.sidebar{width:210px;background:#0d0d14;border-right:0.5px solid #1a1a28;display:flex;flex-direction:column;position:fixed;height:100vh;z-index:10;}
-.sidebar-logo{padding:1.25rem;font-size:15px;font-weight:600;color:#fff;border-bottom:0.5px solid #1a1a28;}
-.sidebar-logo span{color:#a78bfa;}
-.sidebar-nav{flex:1;padding:1rem 0;}
-.nav-item{display:flex;align-items:center;gap:10px;padding:10px 1.25rem;font-size:13px;color:#555;cursor:pointer;border-left:2px solid transparent;transition:all 0.15s;}
-.nav-item:hover{background:#13131c;color:#aaa;}
-.nav-item.active{color:#a78bfa;border-left-color:#a78bfa;background:#13131c;}
-.nav-icon{font-size:16px;width:18px;text-align:center;}
-.sidebar-user{padding:1rem 1.25rem;border-top:0.5px solid #1a1a28;}
-.user-info{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
-.user-avatar{width:32px;height:32px;border-radius:50%;background:#1e1030;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#a78bfa;flex-shrink:0;}
-.user-name{font-size:12px;font-weight:500;color:#ccc;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.user-plan{font-size:10px;color:#555;}
-.signout-btn{width:100%;background:transparent;border:0.5px solid #1e1e2e;border-radius:6px;padding:7px;font-size:12px;color:#555;cursor:pointer;transition:all 0.2s;}
-.signout-btn:hover{border-color:#3d2f6e;color:#a78bfa;}
+#app-screen { display: none; min-height: 100vh; }
+.layout { display: flex; min-height: 100vh; }
+.sidebar { width: 220px; padding: 1.5rem 1rem; display: flex; flex-direction: column; position: fixed; height: 100vh; overflow-y: auto; z-index: 10; }
+.sidebar-logo { padding: 0.5rem 0.75rem 1.75rem; }
+.sidebar-logo h2 { font-family: 'DM Serif Display', serif; font-size: 20px; font-weight: 400; color: var(--text); }
+.sidebar-logo h2 span { color: var(--accent); }
+.sidebar-logo p { font-size: 10px; color: var(--text-dim); margin-top: 2px; letter-spacing: 0.5px; text-transform: uppercase; }
+.nav-section { font-size: 10px; color: var(--text-dim); letter-spacing: 1px; text-transform: uppercase; padding: 1rem 0.75rem 0.4rem; }
+.nav-item { display: flex; align-items: center; gap: 10px; padding: 11px 14px; font-size: 13px; color: var(--text-muted); cursor: pointer; border-radius: var(--radius-sm); transition: all 0.2s; }
+.nav-item:hover { color: var(--text); }
+.nav-item.active { color: var(--accent); font-weight: 500; box-shadow: var(--neu-shadow-inset-sm); }
+.nav-item svg { width: 15px; height: 15px; flex-shrink: 0; }
+.sidebar-bottom { margin-top: auto; padding-top: 1rem; }
+.user-card { padding: 1rem; margin-top: 0.5rem; }
+.user-row { display: flex; align-items: center; gap: 10px; margin-bottom: 0.875rem; }
+.user-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #e8b86d, #c49a4e); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; color: #1a1a1a; flex-shrink: 0; box-shadow: var(--neu-shadow-sm); }
+.user-name { font-size: 13px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.user-plan { font-size: 10px; color: var(--text-dim); margin-top: 1px; }
+.signout-btn { width: 100%; padding: 9px; font-size: 12px; color: var(--text-muted); display: flex; align-items: center; justify-content: center; gap: 6px; }
 
-/* MAIN */
-.main{margin-left:210px;flex:1;display:flex;flex-direction:column;}
-.topbar{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.5rem;border-bottom:0.5px solid #1a1a28;background:#0a0a0f;position:sticky;top:0;z-index:5;}
-.topbar-title{font-size:15px;font-weight:600;color:#fff;}
-.topbar-right{display:flex;align-items:center;gap:10px;}
-.plan-badge{background:#1e1030;color:#a78bfa;font-size:10px;font-weight:600;padding:4px 10px;border-radius:20px;letter-spacing:0.5px;}
-.content{padding:1.5rem;display:flex;flex-direction:column;gap:1.25rem;}
+.main { margin-left: 220px; flex: 1; padding: 1.75rem; display: flex; flex-direction: column; gap: 1.25rem; }
+.topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.25rem; }
+.topbar-left h1 { font-size: 22px; font-weight: 500; color: var(--text); }
+.topbar-left p { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+.plan-pill { background: linear-gradient(135deg, #e8b86d22, #c49a4e11); border: 1px solid #e8b86d44; border-radius: 20px; padding: 5px 14px; font-size: 11px; font-weight: 600; color: var(--accent); letter-spacing: 0.5px; }
 
-/* METRICS */
-.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;}
-.metric{background:#11111a;border:0.5px solid #1e1e2e;border-radius:10px;padding:1rem;}
-.metric-label{font-size:11px;color:#444;margin-bottom:6px;}
-.metric-value{font-size:22px;font-weight:600;color:#fff;}
-.metric-change{font-size:11px;margin-top:4px;color:#4ade80;}
+.page { display: none; flex-direction: column; gap: 1.25rem; }
+.page.active { display: flex; }
 
-/* PANELS */
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
-.panel{background:#11111a;border:0.5px solid #1e1e2e;border-radius:10px;padding:1.25rem;}
-.panel-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;}
-.panel-title{font-size:13px;font-weight:600;color:#ccc;}
-.panel-btn{font-size:11px;color:#7c3aed;background:transparent;border:none;cursor:pointer;}
+.metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; }
+.metric { padding: 1.25rem; }
+.metric-icon { width: 36px; height: 36px; border-radius: var(--radius-xs); background: var(--bg-dark); display: flex; align-items: center; justify-content: center; margin-bottom: 0.875rem; box-shadow: var(--neu-shadow-sm); color: var(--accent); }
+.metric-icon svg { width: 16px; height: 16px; }
+.metric-label { font-size: 11px; color: var(--text-muted); font-weight: 500; margin-bottom: 4px; }
+.metric-value { font-size: 26px; font-weight: 600; color: var(--text); line-height: 1; }
+.metric-sub { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
 
-/* AI GENERATOR */
-.ai-panel{background:#11111a;border:0.5px solid #1e1e2e;border-radius:10px;padding:1.25rem;}
-.ai-label{font-size:11px;color:#7c3aed;font-weight:600;letter-spacing:0.5px;margin-bottom:0.875rem;}
-.ai-row{display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap;}
-.ai-select{background:#0a0a0f;border:0.5px solid #2a2a3a;border-radius:8px;padding:9px 12px;font-size:13px;color:#ccc;outline:none;font-family:'Inter',sans-serif;}
-.ai-input{flex:1;min-width:180px;background:#0a0a0f;border:0.5px solid #2a2a3a;border-radius:8px;padding:9px 12px;font-size:13px;color:#e2e2e8;outline:none;font-family:'Inter',sans-serif;}
-.ai-input:focus,.ai-select:focus{border-color:#7c3aed;}
-.gen-btn{background:#7c3aed;color:#fff;border:none;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap;}
-.gen-btn:hover{background:#6d28d9;}
-.output-box{background:#0a0a0f;border:0.5px solid #1e1e2e;border-radius:8px;padding:1rem;font-size:13px;color:#aaa;line-height:1.7;min-height:80px;position:relative;}
-.copy-btn{position:absolute;top:8px;right:8px;background:#1e1e2e;border:0.5px solid #2a2a3a;border-radius:6px;padding:4px 10px;font-size:11px;color:#666;cursor:pointer;}
-.copy-btn:hover{color:#ccc;}
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.panel { padding: 1.5rem; }
+.panel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; }
+.panel-title { font-size: 14px; font-weight: 600; color: var(--text); display: flex; align-items: center; gap: 8px; }
+.panel-title svg { width: 14px; height: 14px; color: var(--accent); }
+.panel-action { font-size: 12px; color: var(--accent); background: none; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; font-weight: 500; }
 
-/* LEADS */
-.lead-row{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:0.5px solid #1a1a28;font-size:12px;}
-.lead-row:last-child{border-bottom:none;}
-.lead-name{font-weight:500;color:#ccc;}
-.lead-source{color:#444;font-size:11px;}
-.lead-value{color:#a78bfa;font-weight:500;}
-.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600;}
-.badge-green{background:#0d1f14;color:#4ade80;}
-.badge-amber{background:#1f1600;color:#fbbf24;}
-.badge-blue{background:#0a1628;color:#60a5fa;}
+.ai-panel { padding: 1.5rem; }
+.ai-label { font-size: 10px; color: var(--accent); font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 1rem; display: flex; align-items: center; gap: 6px; }
+.ai-label svg { width: 12px; height: 12px; }
+.ai-row { display: flex; gap: 10px; margin-bottom: 1rem; flex-wrap: wrap; }
+.ai-select, .ai-input-field { padding: 11px 14px; font-size: 13px; color: var(--text); background: transparent; border: none; outline: none; font-family: 'DM Sans', sans-serif; }
+.ai-input-field { flex: 1; min-width: 180px; }
+.ai-input-field::placeholder { color: var(--text-dim); }
+.ai-select option { background: var(--bg-dark); }
+.output-area { padding: 1rem 1.25rem; font-size: 13px; color: var(--text-muted); line-height: 1.8; min-height: 90px; position: relative; }
+.copy-btn { position: absolute; top: 10px; right: 10px; padding: 5px 12px; font-size: 11px; font-weight: 500; display: flex; align-items: center; gap: 5px; }
+.copy-btn svg { width: 12px; height: 12px; }
 
-/* ADD LEAD FORM */
-.add-lead-form{display:none;background:#0a0a0f;border:0.5px solid #2a2a3a;border-radius:8px;padding:1rem;margin-top:0.75rem;}
-.add-lead-form.show{display:block;}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
-.form-input{background:#11111a;border:0.5px solid #1e1e2e;border-radius:6px;padding:8px 10px;font-size:12px;color:#e2e2e8;outline:none;font-family:'Inter',sans-serif;width:100%;}
-.form-input:focus{border-color:#7c3aed;}
-.form-actions{display:flex;gap:8px;margin-top:8px;}
-.save-btn{background:#7c3aed;color:#fff;border:none;border-radius:6px;padding:8px 16px;font-size:12px;font-weight:500;cursor:pointer;}
-.cancel-btn{background:transparent;color:#555;border:0.5px solid #1e1e2e;border-radius:6px;padding:8px 16px;font-size:12px;cursor:pointer;}
+.lead-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--bg-dark); font-size: 13px; }
+.lead-row:last-child { border-bottom: none; }
+.lead-name { font-weight: 500; color: var(--text); }
+.lead-source { font-size: 11px; color: var(--text-dim); margin-top: 1px; }
+.lead-right { display: flex; align-items: center; gap: 10px; }
+.lead-value { font-size: 12px; color: var(--accent); font-weight: 500; }
+.badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 10px; font-weight: 600; }
+.badge-hot { background: #1a2e1a; color: #4ade80; }
+.badge-warm { background: #2a200a; color: #fbbf24; }
+.badge-new { background: #0e1e2e; color: #60a5fa; }
 
-/* BARS */
-.bar-row{margin-bottom:10px;}
-.bar-label{display:flex;justify-content:space-between;font-size:11px;color:#555;margin-bottom:4px;}
-.bar-track{background:#1a1a28;border-radius:4px;height:6px;}
-.bar-fill{height:6px;border-radius:4px;}
+.add-form { display: none; padding: 1.25rem; margin-top: 1rem; }
+.add-form.show { display: block; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+.form-field { padding: 10px 12px; font-size: 13px; color: var(--text); background: transparent; border: none; outline: none; font-family: 'DM Sans', sans-serif; width: 100%; }
+.form-field::placeholder { color: var(--text-dim); }
+.form-field option { background: var(--bg-dark); }
+.form-actions { display: flex; gap: 8px; margin-top: 10px; }
+.save-btn { padding: 9px 20px; font-size: 13px; font-weight: 600; }
+.cancel-btn { padding: 9px 16px; font-size: 13px; color: var(--text-muted); }
 
-/* TABS */
-.page{display:none;}
-.page.active{display:block;}
+.bar-row { margin-bottom: 14px; }
+.bar-row:last-child { margin-bottom: 0; }
+.bar-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
+.bar-track { border-radius: 4px; height: 6px; box-shadow: var(--neu-shadow-inset-sm); }
+.bar-fill { height: 6px; border-radius: 4px; }
 
-/* LOADING */
-.dots{display:inline-flex;gap:4px;align-items:center;}
-.dot{width:5px;height:5px;border-radius:50%;background:#7c3aed;animation:pulse 1.2s infinite;}
-.dot:nth-child(2){animation-delay:0.2s;}
-.dot:nth-child(3){animation-delay:0.4s;}
-@keyframes pulse{0%,100%{opacity:0.3}50%{opacity:1}}
+.history-item { padding: 12px 0; border-bottom: 1px solid var(--bg-dark); }
+.history-item:last-child { border-bottom: none; }
+.history-type { font-size: 10px; color: var(--accent); font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 4px; }
+.history-text { font-size: 12px; color: var(--text-muted); line-height: 1.6; }
 
-@media(max-width:640px){
+.loading { display: flex; align-items: center; gap: 6px; color: var(--text-dim); font-size: 13px; }
+.dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); animation: pulse 1.2s infinite; }
+.dot:nth-child(2){animation-delay:0.2s;}.dot:nth-child(3){animation-delay:0.4s;}
+@keyframes pulse{0%,100%{opacity:0.2}50%{opacity:1}}
+
+.empty { padding: 2rem 0; text-align: center; color: var(--text-dim); font-size: 13px; }
+.empty svg { width: 28px; height: 28px; margin: 0 auto 0.75rem; display: block; opacity: 0.3; }
+
+@media(max-width:768px){
   .sidebar{width:100%;height:auto;position:relative;}
   .main{margin-left:0;}
   .grid2{grid-template-columns:1fr;}
+  .metrics{grid-template-columns:1fr 1fr;}
 }
 </style>
 </head>
 <body>
 
-<!-- AUTH SCREEN -->
 <div id="auth-screen">
-  <div class="auth-card">
-    <div class="auth-logo">Business<span>Boost</span> AI</div>
-    <div class="auth-sub">Sign in to your dashboard</div>
-    <div class="auth-tabs">
-      <button class="auth-tab active" onclick="switchAuthTab('login')">Sign in</button>
-      <button class="auth-tab" onclick="switchAuthTab('signup')">Create account</button>
+  <div class="auth-wrap">
+    <div class="auth-logo">
+      <h1>Business<span>Boost</span> AI</h1>
+      <p>Your all-in-one business growth platform</p>
     </div>
-    <div id="auth-error" class="auth-error"></div>
-    <input class="auth-input" id="auth-email" type="email" placeholder="Email address" />
-    <input class="auth-input" id="auth-password" type="password" placeholder="Password" />
-    <input class="auth-input" id="auth-name" type="text" placeholder="Your name" style="display:none" />
-    <button class="auth-btn" id="auth-submit-btn" onclick="handleEmailAuth()">Sign in</button>
-    <div class="auth-divider">or</div>
-    <button class="google-btn" onclick="handleGoogleAuth()">
-      <svg width="16" height="16" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20H24v8h11.3C33.6 33.1 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.8 1.1 7.9 3l5.7-5.7C34.1 6.5 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20c11 0 19.7-8 19.7-20 0-1.3-.1-2.7-.1-4z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.5 15.1 18.9 12 24 12c3 0 5.8 1.1 7.9 3l5.7-5.7C34.1 6.5 29.3 4 24 4 16.3 4 9.7 8.4 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-1.9 13.5-5l-6.2-5.2C29.4 35.5 26.8 36 24 36c-5.2 0-9.6-2.9-11.3-7.1l-6.6 4.8C9.8 39.7 16.4 44 24 44z"/><path fill="#1976D2" d="M43.6 20H24v8h11.3c-.8 2.3-2.3 4.2-4.3 5.6l6.2 5.2C41 35.2 44 30 44 24c0-1.3-.1-2.7-.4-4z"/></svg>
-      Continue with Google
-    </button>
+    <div class="auth-card neu-card">
+      <div class="auth-tabs neu-inset-sm">
+        <button class="auth-tab active" onclick="switchTab('login')">Sign in</button>
+        <button class="auth-tab" onclick="switchTab('signup')">Create account</button>
+      </div>
+      <div id="auth-error" class="auth-error"></div>
+      <div class="auth-field">
+        <label>Email</label>
+        <div class="neu-inset-sm"><input class="auth-input" id="auth-email" type="email" placeholder="you@example.com" /></div>
+      </div>
+      <div class="auth-field">
+        <label>Password</label>
+        <div class="neu-inset-sm"><input class="auth-input" id="auth-password" type="password" placeholder="••••••••" /></div>
+      </div>
+      <div class="auth-field" id="name-field" style="display:none">
+        <label>Your name</label>
+        <div class="neu-inset-sm"><input class="auth-input" id="auth-name" type="text" placeholder="Jane Smith" /></div>
+      </div>
+      <button class="neu-btn-accent auth-submit" id="auth-submit" onclick="handleEmailAuth()">Sign in</button>
+      <div class="auth-divider">or</div>
+      <button class="neu-btn google-btn" onclick="handleGoogleAuth()">
+        <svg width="16" height="16" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20H24v8h11.3C33.6 33.1 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.8 1.1 7.9 3l5.7-5.7C34.1 6.5 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20c11 0 19.7-8 19.7-20 0-1.3-.1-2.7-.1-4z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.5 15.1 18.9 12 24 12c3 0 5.8 1.1 7.9 3l5.7-5.7C34.1 6.5 29.3 4 24 4 16.3 4 9.7 8.4 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-1.9 13.5-5l-6.2-5.2C29.4 35.5 26.8 36 24 36c-5.2 0-9.6-2.9-11.3-7.1l-6.6 4.8C9.8 39.7 16.4 44 24 44z"/><path fill="#1976D2" d="M43.6 20H24v8h11.3c-.8 2.3-2.3 4.2-4.3 5.6l6.2 5.2C41 35.2 44 30 44 24c0-1.3-.1-2.7-.4-4z"/></svg>
+        Continue with Google
+      </button>
+    </div>
   </div>
 </div>
 
-<!-- APP SCREEN -->
 <div id="app-screen">
-  <div class="app-layout">
-    <div class="sidebar">
-      <div class="sidebar-logo">Business<span>Boost</span> AI</div>
-      <nav class="sidebar-nav">
-        <div class="nav-item active" onclick="showPage('dashboard', this)"><span class="nav-icon">◈</span> Dashboard</div>
-        <div class="nav-item" onclick="showPage('marketing', this)"><span class="nav-icon">✦</span> AI Marketing</div>
-        <div class="nav-item" onclick="showPage('leads', this)"><span class="nav-icon">◎</span> Leads</div>
-        <div class="nav-item" onclick="showPage('analytics', this)"><span class="nav-icon">▲</span> Analytics</div>
-      </nav>
-      <div class="sidebar-user">
-        <div class="user-info">
-          <div class="user-avatar" id="user-avatar">?</div>
-          <div>
-            <div class="user-name" id="user-name">Loading...</div>
-            <div class="user-plan" id="user-plan">Free plan</div>
-          </div>
-        </div>
-        <button class="signout-btn" onclick="signOut()">Sign out</button>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <h2>Business<span>Boost</span></h2>
+        <p>Growth Platform</p>
       </div>
-    </div>
-
-    <div class="main">
-      <div class="topbar">
-        <div class="topbar-title" id="page-title">Dashboard</div>
-        <div class="topbar-right">
-          <span class="plan-badge" id="plan-label">FREE</span>
+      <div class="nav-section">Main</div>
+      <div class="nav-item active" onclick="showPage('dashboard',this)"><i data-lucide="layout-dashboard"></i> Dashboard</div>
+      <div class="nav-item" onclick="showPage('marketing',this)"><i data-lucide="sparkles"></i> AI Marketing</div>
+      <div class="nav-item" onclick="showPage('leads',this)"><i data-lucide="users"></i> Leads</div>
+      <div class="nav-item" onclick="showPage('analytics',this)"><i data-lucide="bar-chart-2"></i> Analytics</div>
+      <div class="nav-section">Account</div>
+      <div class="nav-item" onclick="showPage('settings',this)"><i data-lucide="settings"></i> Settings</div>
+      <div class="sidebar-bottom">
+        <div class="user-card neu-card-sm">
+          <div class="user-row">
+            <div class="user-avatar" id="user-avatar">?</div>
+            <div>
+              <div class="user-name" id="user-name">Loading...</div>
+              <div class="user-plan" id="user-plan">Free plan</div>
+            </div>
+          </div>
+          <button class="neu-btn signout-btn" onclick="doSignOut()"><i data-lucide="log-out" style="width:13px;height:13px"></i> Sign out</button>
         </div>
       </div>
+    </aside>
 
-      <div class="content">
-
-        <!-- DASHBOARD PAGE -->
-        <div class="page active" id="page-dashboard">
-          <div class="metrics">
-            <div class="metric"><div class="metric-label">Total leads</div><div class="metric-value" id="m-leads">0</div><div class="metric-change">Track your pipeline</div></div>
-            <div class="metric"><div class="metric-label">Content generated</div><div class="metric-value" id="m-content">0</div><div class="metric-change">AI pieces this month</div></div>
-            <div class="metric"><div class="metric-label">Hot leads</div><div class="metric-value" id="m-hot">0</div><div class="metric-change" style="color:#fbbf24">Ready to close</div></div>
-            <div class="metric"><div class="metric-label">Plan</div><div class="metric-value" style="font-size:16px" id="m-plan">Free</div><div class="metric-change" style="color:#a78bfa">Upgrade anytime</div></div>
-          </div>
-          <div class="ai-panel">
-            <div class="ai-label">✦ QUICK GENERATE</div>
-            <div class="ai-row">
-              <select class="ai-select" id="dash-type"><option>Instagram post</option><option>Email campaign</option><option>Google ad</option><option>Facebook ad</option></select>
-              <input class="ai-input" id="dash-prompt" placeholder="Describe your business..." />
-              <button class="gen-btn" onclick="generateContent('dash')">Generate</button>
-            </div>
-            <div class="output-box" id="dash-output"><span style="color:#333">Your AI content appears here...</span></div>
-          </div>
-          <div class="grid2">
-            <div class="panel">
-              <div class="panel-header"><div class="panel-title">Recent leads</div><button class="panel-btn" onclick="showPage('leads', document.querySelectorAll('.nav-item')[2])">View all</button></div>
-              <div id="dash-leads"><div style="font-size:12px;color:#333;padding:1rem 0;">No leads yet. Add your first lead!</div></div>
-            </div>
-            <div class="panel">
-              <div class="panel-header"><div class="panel-title">Top channels</div></div>
-              <div class="bar-row"><div class="bar-label"><span>Instagram</span><span>42%</span></div><div class="bar-track"><div class="bar-fill" style="width:42%;background:#a78bfa"></div></div></div>
-              <div class="bar-row"><div class="bar-label"><span>Google</span><span>28%</span></div><div class="bar-track"><div class="bar-fill" style="width:28%;background:#60a5fa"></div></div></div>
-              <div class="bar-row"><div class="bar-label"><span>Email</span><span>18%</span></div><div class="bar-track"><div class="bar-fill" style="width:18%;background:#4ade80"></div></div></div>
-              <div class="bar-row"><div class="bar-label"><span>Facebook</span><span>12%</span></div><div class="bar-track"><div class="bar-fill" style="width:12%;background:#fbbf24"></div></div></div>
-            </div>
-          </div>
+    <main class="main">
+      <div class="page active" id="page-dashboard">
+        <div class="topbar">
+          <div class="topbar-left"><h1>Good morning ✦</h1><p id="dash-sub">Here's what's happening with your business.</p></div>
+          <div><span class="plan-pill" id="plan-label">FREE</span></div>
         </div>
-
-        <!-- MARKETING PAGE -->
-        <div class="page" id="page-marketing">
-          <div class="ai-panel">
-            <div class="ai-label">✦ AI CONTENT GENERATOR</div>
-            <div class="ai-row">
-              <select class="ai-select" id="mkt-type"><option>Instagram post</option><option>Email campaign</option><option>Google ad</option><option>Facebook ad</option><option>Twitter/X post</option><option>WhatsApp message</option></select>
-              <input class="ai-input" id="mkt-prompt" placeholder="Describe your business or product..." />
-              <button class="gen-btn" onclick="generateContent('mkt')">Generate</button>
-            </div>
-            <div class="output-box" id="mkt-output"><span style="color:#333">Your AI-generated content will appear here...</span></div>
-          </div>
-          <div class="panel" style="margin-top:0;">
-            <div class="panel-header"><div class="panel-title">Content history</div></div>
-            <div id="content-history"><div style="font-size:12px;color:#333;padding:0.5rem 0;">No content generated yet.</div></div>
-          </div>
+        <div class="metrics">
+          <div class="metric neu-card"><div class="metric-icon"><i data-lucide="users"></i></div><div class="metric-label">Total leads</div><div class="metric-value" id="m-leads">0</div><div class="metric-sub">in your pipeline</div></div>
+          <div class="metric neu-card"><div class="metric-icon"><i data-lucide="flame"></i></div><div class="metric-label">Hot leads</div><div class="metric-value" id="m-hot">0</div><div class="metric-sub">ready to close</div></div>
+          <div class="metric neu-card"><div class="metric-icon"><i data-lucide="file-text"></i></div><div class="metric-label">Content created</div><div class="metric-value" id="m-content">0</div><div class="metric-sub">AI pieces generated</div></div>
+          <div class="metric neu-card"><div class="metric-icon"><i data-lucide="trending-up"></i></div><div class="metric-label">Conversion</div><div class="metric-value" id="m-rate">—</div><div class="metric-sub">hot / total leads</div></div>
         </div>
-
-        <!-- LEADS PAGE -->
-        <div class="page" id="page-leads">
-          <div class="panel">
-            <div class="panel-header">
-              <div class="panel-title">All leads</div>
-              <button class="panel-btn" onclick="toggleAddLead()">+ Add lead</button>
-            </div>
-            <div class="add-lead-form" id="add-lead-form">
-              <div class="form-row">
-                <input class="form-input" id="lead-name" placeholder="Name" />
-                <input class="form-input" id="lead-value" placeholder="Deal value (SCR)" />
-              </div>
-              <div class="form-row">
-                <input class="form-input" id="lead-source" placeholder="Source (e.g. Instagram)" />
-                <select class="form-input" id="lead-status">
-                  <option value="New">New</option>
-                  <option value="Warm">Warm</option>
-                  <option value="Hot">Hot</option>
-                </select>
-              </div>
-              <div class="form-actions">
-                <button class="save-btn" onclick="addLead()">Save lead</button>
-                <button class="cancel-btn" onclick="toggleAddLead()">Cancel</button>
-              </div>
-            </div>
-            <div id="all-leads"><div style="font-size:12px;color:#333;padding:1rem 0;">No leads yet. Add your first one!</div></div>
+        <div class="ai-panel neu-card">
+          <div class="ai-label"><i data-lucide="sparkles"></i> Quick generate</div>
+          <div class="ai-row">
+            <div class="neu-inset-sm"><select class="ai-select" id="d-type"><option>Instagram post</option><option>Email campaign</option><option>Google ad</option><option>Facebook ad</option></select></div>
+            <div class="neu-inset-sm" style="flex:1;min-width:180px"><input class="ai-input-field" id="d-prompt" placeholder="Describe your business or product..." /></div>
+            <button class="neu-btn-accent" style="padding:11px 20px;font-size:13px;display:flex;align-items:center;gap:6px" onclick="generate('d')"><i data-lucide="zap" style="width:14px;height:14px"></i> Generate</button>
           </div>
+          <div class="neu-inset output-area" id="d-output"><span style="color:var(--text-dim)">Your AI-generated content will appear here...</span></div>
         </div>
-
-        <!-- ANALYTICS PAGE -->
-        <div class="page" id="page-analytics">
-          <div class="metrics">
-            <div class="metric"><div class="metric-label">Total leads</div><div class="metric-value" id="a-leads">0</div></div>
-            <div class="metric"><div class="metric-label">Hot leads</div><div class="metric-value" id="a-hot">0</div></div>
-            <div class="metric"><div class="metric-label">Warm leads</div><div class="metric-value" id="a-warm">0</div></div>
-            <div class="metric"><div class="metric-label">Content pieces</div><div class="metric-value" id="a-content">0</div></div>
+        <div class="grid2">
+          <div class="panel neu-card">
+            <div class="panel-header"><div class="panel-title"><i data-lucide="users"></i> Recent leads</div><button class="panel-action" onclick="showPage('leads',document.querySelectorAll('.nav-item')[2])">View all →</button></div>
+            <div id="dash-leads"><div class="empty"><i data-lucide="inbox"></i>No leads yet</div></div>
           </div>
-          <div class="panel">
-            <div class="panel-header"><div class="panel-title">Lead pipeline breakdown</div></div>
-            <div id="analytics-bars"><div style="font-size:12px;color:#333;">Add leads to see your pipeline breakdown.</div></div>
-          </div>
-          <div class="panel">
-            <div class="panel-header"><div class="panel-title">Top traffic sources</div></div>
-            <div class="bar-row"><div class="bar-label"><span>Instagram</span><span>42%</span></div><div class="bar-track"><div class="bar-fill" style="width:42%;background:#a78bfa"></div></div></div>
+          <div class="panel neu-card">
+            <div class="panel-header"><div class="panel-title"><i data-lucide="pie-chart"></i> Top channels</div></div>
+            <div class="bar-row"><div class="bar-label"><span>Instagram</span><span>42%</span></div><div class="bar-track"><div class="bar-fill" style="width:42%;background:var(--accent)"></div></div></div>
             <div class="bar-row"><div class="bar-label"><span>Google</span><span>28%</span></div><div class="bar-track"><div class="bar-fill" style="width:28%;background:#60a5fa"></div></div></div>
             <div class="bar-row"><div class="bar-label"><span>Email</span><span>18%</span></div><div class="bar-track"><div class="bar-fill" style="width:18%;background:#4ade80"></div></div></div>
-            <div class="bar-row"><div class="bar-label"><span>Facebook</span><span>12%</span></div><div class="bar-track"><div class="bar-fill" style="width:12%;background:#fbbf24"></div></div></div>
+            <div class="bar-row"><div class="bar-label"><span>Facebook</span><span>12%</span></div><div class="bar-track"><div class="bar-fill" style="width:12%;background:#a78bfa"></div></div></div>
           </div>
         </div>
-
       </div>
-    </div>
+
+      <div class="page" id="page-marketing">
+        <div class="topbar"><div class="topbar-left"><h1>AI Marketing</h1><p>Generate content for any platform in seconds.</p></div></div>
+        <div class="ai-panel neu-card">
+          <div class="ai-label"><i data-lucide="sparkles"></i> Content generator</div>
+          <div class="ai-row">
+            <div class="neu-inset-sm"><select class="ai-select" id="m-type"><option>Instagram post</option><option>Email campaign</option><option>Google ad</option><option>Facebook ad</option><option>Twitter/X post</option><option>WhatsApp message</option><option>LinkedIn post</option></select></div>
+            <div class="neu-inset-sm" style="flex:1;min-width:180px"><input class="ai-input-field" id="m-prompt" placeholder="Describe your business or product..." /></div>
+            <button class="neu-btn-accent" style="padding:11px 20px;font-size:13px;display:flex;align-items:center;gap:6px" onclick="generate('m')"><i data-lucide="zap" style="width:14px;height:14px"></i> Generate</button>
+          </div>
+          <div class="neu-inset output-area" id="m-output"><span style="color:var(--text-dim)">Your AI-generated content will appear here...</span></div>
+        </div>
+        <div class="panel neu-card">
+          <div class="panel-header"><div class="panel-title"><i data-lucide="clock"></i> Content history</div></div>
+          <div id="content-history"><div class="empty"><i data-lucide="file-text"></i>No content generated yet</div></div>
+        </div>
+      </div>
+
+      <div class="page" id="page-leads">
+        <div class="topbar">
+          <div class="topbar-left"><h1>Leads</h1><p>Track and manage your customer pipeline.</p></div>
+          <button class="neu-btn-accent" style="padding:10px 18px;font-size:13px;display:flex;align-items:center;gap:6px" onclick="toggleForm()"><i data-lucide="plus" style="width:14px;height:14px"></i> Add lead</button>
+        </div>
+        <div class="add-form neu-inset" id="add-form">
+          <div class="form-row">
+            <div class="neu-card-sm"><input class="form-field" id="f-name" placeholder="Full name" /></div>
+            <div class="neu-card-sm"><input class="form-field" id="f-value" placeholder="Deal value (SCR)" /></div>
+          </div>
+          <div class="form-row">
+            <div class="neu-card-sm"><input class="form-field" id="f-source" placeholder="Source (e.g. Instagram)" /></div>
+            <div class="neu-card-sm"><select class="form-field" id="f-status"><option>New</option><option>Warm</option><option>Hot</option></select></div>
+          </div>
+          <div class="form-actions">
+            <button class="neu-btn-accent save-btn" onclick="saveLead()">Save lead</button>
+            <button class="neu-btn cancel-btn" onclick="toggleForm()">Cancel</button>
+          </div>
+        </div>
+        <div class="panel neu-card">
+          <div class="panel-header"><div class="panel-title"><i data-lucide="list"></i> All leads</div></div>
+          <div id="all-leads"><div class="empty"><i data-lucide="users"></i>No leads yet. Add your first one!</div></div>
+        </div>
+      </div>
+
+      <div class="page" id="page-analytics">
+        <div class="topbar"><div class="topbar-left"><h1>Analytics</h1><p>Understand what's driving your growth.</p></div></div>
+        <div class="metrics">
+          <div class="metric neu-card"><div class="metric-icon"><i data-lucide="users"></i></div><div class="metric-label">Total leads</div><div class="metric-value" id="a-total">0</div></div>
+          <div class="metric neu-card"><div class="metric-icon"><i data-lucide="flame"></i></div><div class="metric-label">Hot leads</div><div class="metric-value" id="a-hot">0</div></div>
+          <div class="metric neu-card"><div class="metric-icon"><i data-lucide="thermometer"></i></div><div class="metric-label">Warm leads</div><div class="metric-value" id="a-warm">0</div></div>
+          <div class="metric neu-card"><div class="metric-icon"><i data-lucide="file-text"></i></div><div class="metric-label">Content pieces</div><div class="metric-value" id="a-content">0</div></div>
+        </div>
+        <div class="grid2">
+          <div class="panel neu-card">
+            <div class="panel-header"><div class="panel-title"><i data-lucide="bar-chart-2"></i> Pipeline breakdown</div></div>
+            <div id="pipeline-bars"><div class="empty"><i data-lucide="bar-chart-2"></i>Add leads to see breakdown</div></div>
+          </div>
+          <div class="panel neu-card">
+            <div class="panel-header"><div class="panel-title"><i data-lucide="globe"></i> Traffic sources</div></div>
+            <div class="bar-row"><div class="bar-label"><span>Instagram</span><span>42%</span></div><div class="bar-track"><div class="bar-fill" style="width:42%;background:var(--accent)"></div></div></div>
+            <div class="bar-row"><div class="bar-label"><span>Google</span><span>28%</span></div><div class="bar-track"><div class="bar-fill" style="width:28%;background:#60a5fa"></div></div></div>
+            <div class="bar-row"><div class="bar-label"><span>Email</span><span>18%</span></div><div class="bar-track"><div class="bar-fill" style="width:18%;background:#4ade80"></div></div></div>
+            <div class="bar-row"><div class="bar-label"><span>Facebook</span><span>12%</span></div><div class="bar-track"><div class="bar-fill" style="width:12%;background:#a78bfa"></div></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="page" id="page-settings">
+        <div class="topbar"><div class="topbar-left"><h1>Settings</h1><p>Manage your account and subscription.</p></div></div>
+        <div class="panel neu-card">
+          <div class="panel-header"><div class="panel-title"><i data-lucide="user"></i> Account details</div></div>
+          <div style="font-size:13px;color:var(--text-muted);margin-bottom:0.75rem">Email: <span id="s-email" style="color:var(--text)">—</span></div>
+          <div style="font-size:13px;color:var(--text-muted)">Plan: <span id="s-plan" style="color:var(--accent);font-weight:600">Free</span></div>
+        </div>
+        <div class="panel neu-card">
+          <div class="panel-header"><div class="panel-title"><i data-lucide="credit-card"></i> Upgrade your plan</div></div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem">
+            <div class="neu-inset" style="padding:1.25rem;text-align:center">
+              <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px">Starter</div>
+              <div style="font-size:22px;font-weight:600;color:var(--accent);margin-bottom:12px">SCR 399<span style="font-size:12px;color:var(--text-dim)">/mo</span></div>
+              <a href="https://axisagency.lemonsqueezy.com/checkout/buy/52228bf7-d0c4-4665-88df-6d5e01165d3d" style="display:block;padding:9px;font-size:12px;font-weight:600;color:var(--text-muted);text-decoration:none;border-radius:var(--radius-sm)" class="neu-btn">Get started</a>
+            </div>
+            <div style="padding:1.25rem;text-align:center;border:1px solid #e8b86d55;border-radius:var(--radius-sm)">
+              <div style="font-size:10px;color:var(--accent);font-weight:600;letter-spacing:1px;margin-bottom:6px">MOST POPULAR</div>
+              <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px">Growth</div>
+              <div style="font-size:22px;font-weight:600;color:var(--accent);margin-bottom:12px">SCR 799<span style="font-size:12px;color:var(--text-dim)">/mo</span></div>
+              <a href="https://axisagency.lemonsqueezy.com/checkout/buy/544a59a3-bd45-42a7-b84f-c2056399293c" style="display:block;padding:9px;font-size:12px;font-weight:600;color:#1a1a1a;text-decoration:none;border-radius:var(--radius-sm)" class="neu-btn-accent">Start free trial</a>
+            </div>
+            <div class="neu-inset" style="padding:1.25rem;text-align:center">
+              <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px">Agency</div>
+              <div style="font-size:22px;font-weight:600;color:var(--accent);margin-bottom:12px">SCR 1,349<span style="font-size:12px;color:var(--text-dim)">/mo</span></div>
+              <a href="https://axisagency.lemonsqueezy.com/checkout/buy/b9f2f94b-9ddc-4948-b03b-c02f7359df7d" style="display:block;padding:9px;font-size:12px;font-weight:600;color:var(--text-muted);text-decoration:none;border-radius:var(--radius-sm)" class="neu-btn">Get started</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
   </div>
 </div>
 
-<!-- FIREBASE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signOut as fbSignOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, collection, addDoc, getDocs, query, orderBy, doc, setDoc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyC8UW52mL08bGoNw8TsrhOe9OvPy4VB6Do",
-  authDomain: "businessboost-ai.firebaseapp.com",
-  projectId: "businessboost-ai",
-  storageBucket: "businessboost-ai.firebasestorage.app",
-  messagingSenderId: "92085558775",
-  appId: "1:92085558775:web:5648dad6377fc56114a2f2"
-};
+const fbApp = initializeApp({ apiKey:"AIzaSyC8UW52mL08bGoNw8TsrhOe9OvPy4VB6Do", authDomain:"businessboost-ai.firebaseapp.com", projectId:"businessboost-ai", storageBucket:"businessboost-ai.firebasestorage.app", messagingSenderId:"92085558775", appId:"1:92085558775:web:5648dad6377fc56114a2f2" });
+const auth = getAuth(fbApp);
+const db = getFirestore(fbApp);
+const gProvider = new GoogleAuthProvider();
+let uid = null, leads = [], contentCount = 0;
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-const googleProvider = new GoogleAuthProvider();
-
-let currentUser = null;
-let userLeads = [];
-let contentCount = 0;
-
-// AUTH STATE
-onAuthStateChanged(auth, async (user) => {
+onAuthStateChanged(auth, async user => {
   if (user) {
-    currentUser = user;
+    uid = user.uid;
     document.getElementById('auth-screen').style.display = 'none';
     document.getElementById('app-screen').style.display = 'block';
     const name = user.displayName || user.email.split('@')[0];
     const initials = name.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
     document.getElementById('user-avatar').textContent = initials;
     document.getElementById('user-name').textContent = name;
-    await loadUserData();
+    document.getElementById('s-email').textContent = user.email;
+    document.getElementById('dash-sub').textContent = `Welcome back, ${name.split(' ')[0]}. Here's your overview.`;
+    await loadAll();
+    lucide.createIcons();
   } else {
-    currentUser = null;
+    uid = null;
     document.getElementById('auth-screen').style.display = 'flex';
     document.getElementById('app-screen').style.display = 'none';
   }
 });
 
-async function loadUserData() {
-  if (!currentUser) return;
-  const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
+async function loadAll() {
+  const ref = doc(db,'users',uid);
+  const snap = await getDoc(ref);
   let plan = 'Free';
-  if (userDoc.exists()) { plan = userDoc.data().plan || 'Free'; }
-  else { await setDoc(doc(db, 'users', currentUser.uid), { plan: 'Free', email: currentUser.email, createdAt: serverTimestamp() }); }
-  document.getElementById('user-plan').textContent = plan + ' plan';
-  document.getElementById('plan-label').textContent = plan.toUpperCase();
-  document.getElementById('m-plan').textContent = plan;
-  await loadLeads();
-  await loadContentCount();
+  if (snap.exists()) { plan = snap.data().plan||'Free'; }
+  else { await setDoc(ref,{plan:'Free',email:auth.currentUser.email,createdAt:serverTimestamp()}); }
+  ['plan-label','user-plan','s-plan'].forEach(id => {
+    const el = document.getElementById(id);
+    if (id==='user-plan') el.textContent=plan+' plan';
+    else if (id==='s-plan') el.textContent=plan;
+    else el.textContent=plan.toUpperCase();
+  });
+  await loadLeads(); await loadContent();
 }
 
 async function loadLeads() {
-  if (!currentUser) return;
-  const q = query(collection(db, 'users', currentUser.uid, 'leads'), orderBy('createdAt', 'desc'));
+  const q = query(collection(db,'users',uid,'leads'),orderBy('createdAt','desc'));
   const snap = await getDocs(q);
-  userLeads = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  leads = snap.docs.map(d=>({id:d.id,...d.data()}));
   renderLeads();
-  updateMetrics();
 }
 
-async function loadContentCount() {
-  const q = collection(db, 'users', currentUser.uid, 'content');
-  const snap = await getDocs(q);
+async function loadContent() {
+  const snap = await getDocs(collection(db,'users',uid,'content'));
   contentCount = snap.size;
   document.getElementById('m-content').textContent = contentCount;
   document.getElementById('a-content').textContent = contentCount;
-  renderContentHistory(snap.docs.map(d => d.data()));
+  const items = snap.docs.map(d=>d.data());
+  const hist = document.getElementById('content-history');
+  hist.innerHTML = items.length
+    ? items.slice(0,6).map(i=>`<div class="history-item"><div class="history-type">${i.type||'Content'}</div><div class="history-text">${(i.content||'').slice(0,140)}…</div></div>`).join('')
+    : '<div class="empty"><i data-lucide="file-text"></i>No content generated yet</div>';
+  lucide.createIcons();
 }
 
 function renderLeads() {
-  const hot = userLeads.filter(l => l.status === 'Hot').length;
-  const warm = userLeads.filter(l => l.status === 'Warm').length;
-  document.getElementById('m-leads').textContent = userLeads.length;
-  document.getElementById('m-hot').textContent = hot;
-  document.getElementById('a-leads').textContent = userLeads.length;
-  document.getElementById('a-hot').textContent = hot;
-  document.getElementById('a-warm').textContent = warm;
+  const hot=leads.filter(l=>l.status==='Hot').length;
+  const warm=leads.filter(l=>l.status==='Warm').length;
+  const rate=leads.length?Math.round(hot/leads.length*100)+'%':'—';
+  document.getElementById('m-leads').textContent=leads.length;
+  document.getElementById('m-hot').textContent=hot;
+  document.getElementById('m-rate').textContent=rate;
+  document.getElementById('a-total').textContent=leads.length;
+  document.getElementById('a-hot').textContent=hot;
+  document.getElementById('a-warm').textContent=warm;
 
-  const badgeClass = { Hot: 'badge-green', Warm: 'badge-amber', New: 'badge-blue' };
-  const html = userLeads.length === 0
-    ? '<div style="font-size:12px;color:#333;padding:1rem 0;">No leads yet. Add your first one!</div>'
-    : userLeads.map(l => `<div class="lead-row"><div><div class="lead-name">${l.name}</div><div class="lead-source">${l.source || ''}</div></div><div style="display:flex;align-items:center;gap:10px"><div class="lead-value">${l.value ? 'SCR '+l.value : ''}</div><span class="badge ${badgeClass[l.status]||'badge-blue'}">${l.status}</span></div></div>`).join('');
+  const bClass={Hot:'badge-hot',Warm:'badge-warm',New:'badge-new'};
+  const rowHtml=l=>`<div class="lead-row"><div><div class="lead-name">${l.name}</div><div class="lead-source">${l.source||''}</div></div><div class="lead-right">${l.value?`<span class="lead-value">SCR ${l.value}</span>`:''}<span class="badge ${bClass[l.status]||'badge-new'}">${l.status}</span></div></div>`;
 
-  document.getElementById('all-leads').innerHTML = html;
-  document.getElementById('dash-leads').innerHTML = userLeads.length === 0
-    ? '<div style="font-size:12px;color:#333;padding:0.5rem 0;">No leads yet.</div>'
-    : userLeads.slice(0,4).map(l => `<div class="lead-row"><div><div class="lead-name">${l.name}</div><div class="lead-source">${l.source||''}</div></div><span class="badge ${badgeClass[l.status]||'badge-blue'}">${l.status}</span></div>`).join('');
+  document.getElementById('all-leads').innerHTML=leads.length?leads.map(rowHtml).join(''):'<div class="empty"><i data-lucide="users"></i>No leads yet</div>';
+  document.getElementById('dash-leads').innerHTML=leads.length?leads.slice(0,4).map(rowHtml).join(''):'<div class="empty"><i data-lucide="inbox"></i>No leads yet</div>';
 
-  const analyticsHtml = userLeads.length === 0
-    ? '<div style="font-size:12px;color:#333;">Add leads to see your pipeline breakdown.</div>'
-    : ['Hot','Warm','New'].map(s => {
-        const count = userLeads.filter(l=>l.status===s).length;
-        const pct = userLeads.length ? Math.round(count/userLeads.length*100) : 0;
-        const colors = {Hot:'#4ade80',Warm:'#fbbf24',New:'#60a5fa'};
-        return `<div class="bar-row"><div class="bar-label"><span>${s} leads</span><span>${count} (${pct}%)</span></div><div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${colors[s]}"></div></div></div>`;
-      }).join('');
-  document.getElementById('analytics-bars').innerHTML = analyticsHtml;
+  const colors={Hot:'#4ade80',Warm:'#fbbf24',New:'#60a5fa'};
+  document.getElementById('pipeline-bars').innerHTML=leads.length
+    ?['Hot','Warm','New'].map(s=>{const c=leads.filter(l=>l.status===s).length;const p=leads.length?Math.round(c/leads.length*100):0;return`<div class="bar-row"><div class="bar-label"><span>${s} leads</span><span>${c} (${p}%)</span></div><div class="bar-track"><div class="bar-fill" style="width:${p}%;background:${colors[s]}"></div></div></div>`;}).join('')
+    :'<div class="empty"><i data-lucide="bar-chart-2"></i>Add leads to see breakdown</div>';
+  lucide.createIcons();
 }
 
-function renderContentHistory(items) {
-  if (!items.length) return;
-  document.getElementById('content-history').innerHTML = items.slice(0,5).map(i =>
-    `<div style="padding:10px 0;border-bottom:0.5px solid #1a1a28;"><div style="font-size:10px;color:#444;margin-bottom:4px;">${i.type||'Content'}</div><div style="font-size:12px;color:#888;line-height:1.6;">${(i.content||'').slice(0,120)}...</div></div>`
-  ).join('');
-}
-
-function updateMetrics() {}
-
-// GENERATE CONTENT
-window.generateContent = async function(prefix) {
-  const type = document.getElementById(prefix+'-type').value;
-  const prompt = document.getElementById(prefix+'-prompt').value.trim() || 'a local business';
-  const box = document.getElementById(prefix+'-output');
-  box.innerHTML = '<div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div> Generating...';
+window.generate = async function(prefix) {
+  const type=document.getElementById(prefix+'-type').value;
+  const prompt=document.getElementById(prefix+'-prompt').value.trim()||'a local business';
+  const box=document.getElementById(prefix+'-output');
+  box.innerHTML='<div class="loading"><div class="dot"></div><div class="dot"></div><div class="dot"></div> Writing your content...</div>';
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        model:'claude-sonnet-4-6',
-        max_tokens:1000,
-        messages:[{role:'user',content:`Write a short punchy ${type} for: ${prompt}. Make it engaging and ready to use. No intro, just the content.`}]
-      })
-    });
-    const data = await res.json();
-    const text = data.content?.map(c=>c.text||'').join('') || 'Could not generate.';
-    box.innerHTML = `<button class="copy-btn" onclick="copyText('${prefix}')">Copy</button><span id="${prefix}-text">${text.replace(/\n/g,'<br>')}</span>`;
-    if (currentUser) {
-      await addDoc(collection(db,'users',currentUser.uid,'content'), { type, content: text, createdAt: serverTimestamp() });
-      contentCount++;
-      document.getElementById('m-content').textContent = contentCount;
-      document.getElementById('a-content').textContent = contentCount;
-    }
-  } catch(e) {
-    box.innerHTML = '<span style="color:#f87171">Error. Please try again.</span>';
-  }
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,messages:[{role:'user',content:`Write a compelling ${type} for: ${prompt}. Punchy, engaging, ready to post. No intro, just the content.`}]})});
+    const data=await res.json();
+    const text=data.content?.map(c=>c.text||'').join('')||'Could not generate. Please try again.';
+    box.innerHTML=`<button class="neu-btn copy-btn" onclick="doCopy('${prefix}','${prefix}-txt')"><i data-lucide="copy"></i> Copy</button><span id="${prefix}-txt">${text.replace(/\n/g,'<br>')}</span>`;
+    if(uid){await addDoc(collection(db,'users',uid,'content'),{type,content:text,createdAt:serverTimestamp()});contentCount++;document.getElementById('m-content').textContent=contentCount;document.getElementById('a-content').textContent=contentCount;}
+    lucide.createIcons();
+  } catch(e){box.innerHTML='<span style="color:#f87171">Something went wrong. Please try again.</span>';}
 };
 
-window.copyText = function(prefix) {
-  const el = document.getElementById(prefix+'-text');
-  if (el) navigator.clipboard.writeText(el.innerText).catch(()=>{});
-  const btn = document.querySelector(`#${prefix}-output .copy-btn`);
-  if (btn) { btn.textContent='Copied!'; setTimeout(()=>btn.textContent='Copy',2000); }
+window.doCopy=function(prefix,id){
+  const el=document.getElementById(id);
+  if(el)navigator.clipboard.writeText(el.innerText).catch(()=>{});
+  const btn=document.querySelector(`#${prefix}-output .copy-btn`);
+  if(btn){btn.innerHTML='<i data-lucide="check"></i> Copied!';lucide.createIcons();setTimeout(()=>{btn.innerHTML='<i data-lucide="copy"></i> Copy';lucide.createIcons();},2000);}
 };
 
-// LEADS
-window.toggleAddLead = function() {
-  document.getElementById('add-lead-form').classList.toggle('show');
-};
+window.toggleForm=function(){document.getElementById('add-form').classList.toggle('show');};
 
-window.addLead = async function() {
-  if (!currentUser) return;
-  const name = document.getElementById('lead-name').value.trim();
-  if (!name) return alert('Please enter a name.');
-  const lead = {
-    name,
-    value: document.getElementById('lead-value').value.trim(),
-    source: document.getElementById('lead-source').value.trim(),
-    status: document.getElementById('lead-status').value,
-    createdAt: serverTimestamp()
-  };
-  await addDoc(collection(db,'users',currentUser.uid,'leads'), lead);
-  document.getElementById('lead-name').value='';
-  document.getElementById('lead-value').value='';
-  document.getElementById('lead-source').value='';
-  document.getElementById('add-lead-form').classList.remove('show');
+window.saveLead=async function(){
+  const name=document.getElementById('f-name').value.trim();
+  if(!name||!uid)return;
+  await addDoc(collection(db,'users',uid,'leads'),{name,value:document.getElementById('f-value').value.trim(),source:document.getElementById('f-source').value.trim(),status:document.getElementById('f-status').value,createdAt:serverTimestamp()});
+  ['f-name','f-value','f-source'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('add-form').classList.remove('show');
   await loadLeads();
 };
 
-// AUTH
-window.switchAuthTab = function(tab) {
-  document.querySelectorAll('.auth-tab').forEach((t,i) => t.classList.toggle('active', (tab==='login'&&i===0)||(tab==='signup'&&i===1)));
-  document.getElementById('auth-name').style.display = tab==='signup' ? 'block' : 'none';
-  document.getElementById('auth-submit-btn').textContent = tab==='signup' ? 'Create account' : 'Sign in';
-  document.getElementById('auth-error').style.display = 'none';
+window.switchTab=function(tab){
+  document.querySelectorAll('.auth-tab').forEach((t,i)=>t.classList.toggle('active',(tab==='login'&&i===0)||(tab==='signup'&&i===1)));
+  document.getElementById('name-field').style.display=tab==='signup'?'block':'none';
+  document.getElementById('auth-submit').textContent=tab==='signup'?'Create account':'Sign in';
+  document.getElementById('auth-error').style.display='none';
 };
 
-window.handleEmailAuth = async function() {
-  const email = document.getElementById('auth-email').value.trim();
-  const password = document.getElementById('auth-password').value;
-  const name = document.getElementById('auth-name').value.trim();
-  const isSignup = document.getElementById('auth-submit-btn').textContent === 'Create account';
-  const errEl = document.getElementById('auth-error');
-  errEl.style.display = 'none';
-  try {
-    if (isSignup) {
-      const cred = await createUserWithEmailAndPassword(auth, email, password);
-      if (name) await updateProfile(cred.user, { displayName: name });
-    } else {
-      await signInWithEmailAndPassword(auth, email, password);
-    }
-  } catch(e) {
-    errEl.textContent = e.message.replace('Firebase: ','').replace(/\(auth.*\)/,'');
-    errEl.style.display = 'block';
-  }
+window.handleEmailAuth=async function(){
+  const email=document.getElementById('auth-email').value.trim();
+  const pass=document.getElementById('auth-password').value;
+  const name=document.getElementById('auth-name').value.trim();
+  const isSignup=document.getElementById('auth-submit').textContent==='Create account';
+  const err=document.getElementById('auth-error');
+  err.style.display='none';
+  try{
+    if(isSignup){const cred=await createUserWithEmailAndPassword(auth,email,pass);if(name)await updateProfile(cred.user,{displayName:name});}
+    else{await signInWithEmailAndPassword(auth,email,pass);}
+  }catch(e){err.textContent=e.message.replace('Firebase:','').replace(/\(auth[^)]*\)/,'').trim();err.style.display='block';}
 };
 
-window.handleGoogleAuth = async function() {
-  try { await signInWithPopup(auth, googleProvider); }
-  catch(e) {
-    const errEl = document.getElementById('auth-error');
-    errEl.textContent = e.message.replace('Firebase: ','').replace(/\(auth.*\)/,'');
-    errEl.style.display = 'block';
-  }
+window.handleGoogleAuth=async function(){
+  try{await signInWithPopup(auth,gProvider);}
+  catch(e){const err=document.getElementById('auth-error');err.textContent=e.message;err.style.display='block';}
 };
 
-window.signOut = async function() {
-  await fbSignOut(auth);
-};
+window.doSignOut=async function(){await signOut(auth);};
 
-// NAVIGATION
-window.showPage = function(page, el) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+window.showPage=function(page,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   document.getElementById('page-'+page).classList.add('active');
-  if (el) el.classList.add('active');
-  const titles = { dashboard:'Dashboard', marketing:'AI Marketing', leads:'Leads', analytics:'Analytics' };
-  document.getElementById('page-title').textContent = titles[page] || page;
+  if(el)el.classList.add('active');
+  lucide.createIcons();
 };
+
+setTimeout(()=>lucide.createIcons(),200);
 </script>
 </body>
 </html>
