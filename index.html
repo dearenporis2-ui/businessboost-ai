@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BusinessBoost AI — Market smarter. Grow faster.</title>
+<meta name="description" content="AI-generated content, lead tracking, and analytics — everything a small business needs in one place.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:#0a0a0f;font-family:'Inter',sans-serif;color:#e2e2e8;line-height:1.6;}
+a{text-decoration:none;color:inherit;}
+
+/* NAV */
+nav{display:flex;align-items:center;justify-content:space-between;padding:1.25rem 2rem;border-bottom:0.5px solid #1a1a28;position:sticky;top:0;background:#0a0a0f;z-index:100;}
+.logo{font-size:16px;font-weight:600;color:#fff;letter-spacing:-0.3px;}
+.logo span{color:#a78bfa;}
+.nav-links{display:flex;gap:2rem;font-size:14px;}
+.nav-links a{color:#888;transition:color 0.2s;}
+.nav-links a:hover{color:#ccc;}
+.nav-cta{background:#7c3aed;color:#fff;border:none;border-radius:8px;padding:9px 20px;font-size:13px;font-weight:500;cursor:pointer;transition:background 0.2s;}
+.nav-cta:hover{background:#6d28d9;}
+
+/* HERO */
+.hero{text-align:center;padding:5rem 2rem 4rem;max-width:700px;margin:0 auto;}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:#1a1a28;border:0.5px solid #2a2a3a;border-radius:20px;padding:5px 14px;font-size:12px;color:#a78bfa;margin-bottom:1.5rem;}
+.hero h1{font-size:48px;font-weight:600;line-height:1.1;letter-spacing:-1.5px;color:#fff;margin-bottom:1rem;}
+.hero h1 span{color:#a78bfa;}
+.hero p{font-size:17px;color:#888;max-width:400px;margin:0 auto 2rem;line-height:1.7;}
+.hero-btns{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;}
+.btn-purple{background:#7c3aed;color:#fff;border:none;border-radius:8px;padding:13px 28px;font-size:15px;font-weight:500;cursor:pointer;transition:background 0.2s;display:inline-block;}
+.btn-purple:hover{background:#6d28d9;}
+.btn-ghost{background:transparent;color:#888;border:0.5px solid #2a2a3a;border-radius:8px;padding:13px 28px;font-size:15px;cursor:pointer;transition:all 0.2s;display:inline-block;}
+.btn-ghost:hover{border-color:#555;color:#ccc;}
+.hero-stats{display:flex;align-items:center;justify-content:center;gap:2.5rem;margin-top:3rem;padding-top:3rem;border-top:0.5px solid #1a1a28;flex-wrap:wrap;}
+.stat-num{font-size:24px;font-weight:600;color:#fff;}
+.stat-label{font-size:12px;color:#555;margin-top:2px;}
+.stat-divider{width:0.5px;height:36px;background:#1e1e2e;}
+
+/* FEATURES */
+.section{padding:4rem 2rem;}
+.section-inner{max-width:800px;margin:0 auto;}
+.section-label{font-size:11px;color:#7c3aed;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;text-align:center;margin-bottom:0.75rem;}
+.section-title{font-size:28px;font-weight:600;color:#fff;text-align:center;margin-bottom:2.5rem;letter-spacing:-0.5px;}
+.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;}
+.feat-card{background:#11111a;border:0.5px solid #1e1e2e;border-radius:12px;padding:1.5rem;transition:border-color 0.2s;}
+.feat-card:hover{border-color:#3d2f6e;}
+.feat-icon{width:40px;height:40px;border-radius:10px;background:#1e1030;display:flex;align-items:center;justify-content:center;margin-bottom:1rem;font-size:20px;}
+.feat-title{font-size:14px;font-weight:600;color:#ccc;margin-bottom:6px;}
+.feat-desc{font-size:13px;color:#555;line-height:1.65;}
+
+/* HOW IT WORKS */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.5rem;}
+.step{text-align:center;padding:1.5rem 1rem;}
+.step-num{width:36px;height:36px;border-radius:50%;border:0.5px solid #2a2a3a;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:13px;color:#a78bfa;font-weight:600;}
+.step-title{font-size:14px;font-weight:600;color:#ccc;margin-bottom:6px;}
+.step-desc{font-size:13px;color:#555;line-height:1.65;}
+
+/* PRICING */
+.pricing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;}
+.plan{background:#11111a;border:0.5px solid #1e1e2e;border-radius:12px;padding:1.75rem;display:flex;flex-direction:column;transition:border-color 0.2s;}
+.plan:hover{border-color:#3d2f6e;}
+.plan.featured{border:1.5px solid #7c3aed;}
+.plan-badge{background:#1e1030;color:#a78bfa;font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px;display:inline-block;margin-bottom:0.875rem;width:fit-content;letter-spacing:0.5px;}
+.plan-name{font-size:14px;font-weight:600;color:#aaa;margin-bottom:0.5rem;}
+.plan-price{font-size:32px;font-weight:600;color:#fff;letter-spacing:-1px;line-height:1;}
+.plan-price span{font-size:14px;color:#555;font-weight:400;letter-spacing:0;}
+.plan-desc{font-size:13px;color:#555;margin:0.75rem 0 1.25rem;line-height:1.6;}
+.plan-features{list-style:none;margin-bottom:1.5rem;flex:1;}
+.plan-features li{font-size:13px;color:#888;padding:7px 0;border-bottom:0.5px solid #1a1a28;display:flex;align-items:center;gap:8px;}
+.plan-features li:last-child{border-bottom:none;}
+.plan-features li .check{color:#4ade80;font-size:14px;}
+.plan-btn{width:100%;padding:11px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;border:none;text-align:center;transition:all 0.2s;display:block;}
+.plan-btn.solid{background:#7c3aed;color:#fff;}
+.plan-btn.solid:hover{background:#6d28d9;}
+.plan-btn.outline{background:transparent;color:#888;border:0.5px solid #2a2a3a;}
+.plan-btn.outline:hover{border-color:#555;color:#ccc;}
+
+/* TESTIMONIALS */
+.testimonials{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;}
+.testi{background:#11111a;border:0.5px solid #1e1e2e;border-radius:12px;padding:1.5rem;}
+.testi-text{font-size:13px;color:#888;line-height:1.7;margin-bottom:1rem;}
+.testi-author{font-size:12px;font-weight:600;color:#ccc;}
+.testi-role{font-size:11px;color:#555;}
+.stars{color:#fbbf24;font-size:13px;margin-bottom:0.75rem;letter-spacing:2px;}
+
+/* CTA BAR */
+.cta-bar{margin:0 2rem 4rem;background:#11111a;border:0.5px solid #1e1e2e;border-radius:16px;padding:3rem 2rem;text-align:center;}
+.cta-bar h2{font-size:26px;font-weight:600;color:#fff;margin-bottom:0.75rem;letter-spacing:-0.5px;}
+.cta-bar p{font-size:14px;color:#555;margin-bottom:2rem;}
+.cta-note{font-size:12px;color:#444;margin-top:1rem;}
+
+/* FOOTER */
+footer{border-top:0.5px solid #1a1a28;padding:2rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
+.footer-logo{font-size:14px;font-weight:600;color:#555;}
+.footer-logo span{color:#7c3aed;}
+.footer-links{display:flex;gap:1.5rem;font-size:12px;color:#444;}
+.footer-links a{color:#444;transition:color 0.2s;}
+.footer-links a:hover{color:#888;}
+.footer-copy{font-size:12px;color:#333;}
+
+@media(max-width:600px){
+  .hero h1{font-size:32px;}
+  nav .nav-links{display:none;}
+  .stat-divider{display:none;}
+  .hero-stats{gap:1.5rem;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">Business<span>Boost</span> AI</div>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#how">How it works</a>
+    <a href="#pricing">Pricing</a>
+  </div>
+  <a class="nav-cta" href="https://axisagency.lemonsqueezy.com/checkout/buy/544a59a3-bd45-42a7-b84f-c2056399293c">Start free trial</a>
+</nav>
+
+<div class="hero">
+  <div class="hero-badge">✦ AI-powered for small businesses</div>
+  <h1>Market smarter.<br>Grow <span>faster.</span></h1>
+  <p>AI-generated content, lead tracking, and analytics — everything a small business needs in one place.</p>
+  <div class="hero-btns">
+    <a class="btn-purple" href="https://axisagency.lemonsqueezy.com/checkout/buy/544a59a3-bd45-42a7-b84f-c2056399293c">Start free trial — 14 days free</a>
+    <a class="btn-ghost" href="#how">See how it works</a>
+  </div>
+  <div class="hero-stats">
+    <div><div class="stat-num">3,200+</div><div class="stat-label">Businesses using it</div></div>
+    <div class="stat-divider"></div>
+    <div><div class="stat-num">$2.4M</div><div class="stat-label">Revenue tracked</div></div>
+    <div class="stat-divider"></div>
+    <div><div class="stat-num">48hrs</div><div class="stat-label">To first results</div></div>
+  </div>
+</div>
+
+<div class="section" id="features">
+  <div class="section-inner">
+    <div class="section-label">What you get</div>
+    <div class="section-title">Everything in one dashboard</div>
+    <div class="features-grid">
+      <div class="feat-card">
+        <div class="feat-icon">✦</div>
+        <div class="feat-title">AI content generator</div>
+        <div class="feat-desc">Write Instagram posts, emails, Google ads, and Facebook ads instantly — tailored to your business in seconds.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">◎</div>
+        <div class="feat-title">Lead management</div>
+        <div class="feat-desc">Track every lead with hot, warm, and new scoring. Never miss a follow-up or lose a potential customer again.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">▲</div>
+        <div class="feat-title">Smart analytics</div>
+        <div class="feat-desc">See exactly where your traffic comes from, what converts, and how much revenue each channel drives.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="how" style="background:#0d0d14;">
+  <div class="section-inner">
+    <div class="section-label">How it works</div>
+    <div class="section-title">Up and running in minutes</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-title">Connect your business</div>
+        <div class="step-desc">Link your social accounts and website in under 2 minutes. No technical skills needed.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-title">Generate your content</div>
+        <div class="step-desc">Let AI write posts, emails, and ads tailored to your brand and audience.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-title">Watch leads come in</div>
+        <div class="step-desc">Track results, manage leads, and grow your business — all from one dashboard.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-inner">
+    <div class="section-label">What people say</div>
+    <div class="section-title">Businesses love it</div>
+    <div class="testimonials">
+      <div class="testi">
+        <div class="stars">★★★★★</div>
+        <div class="testi-text">"I used to spend hours writing social posts. Now I generate a week's worth of content in 10 minutes. My engagement has doubled."</div>
+        <div class="testi-author">Sarah M.</div>
+        <div class="testi-role">Owner, boutique clothing store</div>
+      </div>
+      <div class="testi">
+        <div class="stars">★★★★★</div>
+        <div class="testi-text">"The lead tracking alone is worth the price. I can finally see which ads are actually bringing in customers."</div>
+        <div class="testi-author">Carlos R.</div>
+        <div class="testi-role">Restaurant owner</div>
+      </div>
+      <div class="testi">
+        <div class="stars">★★★★★</div>
+        <div class="testi-text">"As a freelancer managing 6 clients, the Agency plan saves me at least 15 hours a week. It paid for itself on day one."</div>
+        <div class="testi-author">Aisha O.</div>
+        <div class="testi-role">Marketing freelancer</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="pricing" style="background:#0d0d14;">
+  <div class="section-inner">
+    <div class="section-label">Pricing</div>
+    <div class="section-title">Simple, honest pricing</div>
+    <div class="pricing-grid">
+      <div class="plan">
+        <div class="plan-name">Starter</div>
+        <div class="plan-price">SCR 399<span>/mo</span></div>
+        <div class="plan-desc">Perfect for solo business owners just getting started.</div>
+        <ul class="plan-features">
+          <li><span class="check">✓</span> 50 AI content pieces/mo</li>
+          <li><span class="check">✓</span> Up to 100 leads</li>
+          <li><span class="check">✓</span> Basic analytics</li>
+          <li><span class="check">✓</span> Email support</li>
+        </ul>
+        <a class="plan-btn outline" href="https://axisagency.lemonsqueezy.com/checkout/buy/52228bf7-d0c4-4665-88df-6d5e01165d3d">Get started</a>
+      </div>
+      <div class="plan featured">
+        <div class="plan-badge">MOST POPULAR</div>
+        <div class="plan-name">Growth</div>
+        <div class="plan-price">SCR 799<span>/mo</span></div>
+        <div class="plan-desc">For businesses ready to scale. Includes a 14-day free trial.</div>
+        <ul class="plan-features">
+          <li><span class="check">✓</span> Unlimited AI content</li>
+          <li><span class="check">✓</span> Unlimited leads</li>
+          <li><span class="check">✓</span> Full analytics suite</li>
+          <li><span class="check">✓</span> Priority support</li>
+        </ul>
+        <a class="plan-btn solid" href="https://axisagency.lemonsqueezy.com/checkout/buy/544a59a3-bd45-42a7-b84f-c2056399293c">Start free trial</a>
+      </div>
+      <div class="plan">
+        <div class="plan-name">Agency</div>
+        <div class="plan-price">SCR 1,349<span>/mo</span></div>
+        <div class="plan-desc">Manage multiple clients from one account.</div>
+        <ul class="plan-features">
+          <li><span class="check">✓</span> Everything in Growth</li>
+          <li><span class="check">✓</span> Up to 10 client accounts</li>
+          <li><span class="check">✓</span> White-label reports</li>
+          <li><span class="check">✓</span> Dedicated support</li>
+        </ul>
+        <a class="plan-btn outline" href="https://axisagency.lemonsqueezy.com/checkout/buy/b9f2f94b-9ddc-4948-b03b-c02f7359df7d">Get started</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="cta-bar">
+  <h2>Ready to grow your business?</h2>
+  <p>Join thousands of businesses already using BusinessBoost AI.</p>
+  <a class="btn-purple" href="https://axisagency.lemonsqueezy.com/checkout/buy/544a59a3-bd45-42a7-b84f-c2056399293c">Start your free trial</a>
+  <div class="cta-note">14 days free · No credit card required · Cancel anytime</div>
+</div>
+
+<footer>
+  <div class="footer-logo">Business<span>Boost</span> AI — powered by Axis Agency</div>
+  <div class="footer-links">
+    <a href="#features">Features</a>
+    <a href="#pricing">Pricing</a>
+    <a href="mailto:support@businessboostai.com">Support</a>
+  </div>
+  <div class="footer-copy">© 2026 Axis Agency. All rights reserved.</div>
+</footer>
+
+</body>
+</html>
