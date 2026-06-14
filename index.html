@@ -747,4 +747,151 @@ function renderCalendar(){
   for(let d=1;d<=daysInMonth;d++){
     const key=`${calYear}-${calMonth}-${d}`;
     const hasPosts=calPosts[key]&&calPosts[key].length>0;
-    html+=`<div cla
+    html+=`<div class="cal-day ${hasPosts?'has-post inset-sm':''}" onclick="selectCalDay(${d})">${d}${hasPosts?`<br><span style="font-size:8px;color:var(--accent)">•</span>`:''}</div>`;
+  }
+  grid.innerHTML=html;
+}
+
+window.calNav=function(dir){calMonth+=dir;if(calMonth>11){calMonth=0;calYear++;}if(calMonth<0){calMonth=11;calYear--;}renderCalendar();};
+window.selectCalDay=function(day){
+  const key=`${calYear}-${calMonth}-${day}`;
+  const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  document.getElementById('cal-detail-date').textContent=`${day} ${months[calMonth]} ${calYear}`;
+  const posts=calPosts[key]||[];
+  const detail=document.getElementById('cal-detail-content');
+  detail.innerHTML=posts.length?posts.map(p=>`<div class="tip-card inset-sm" style="margin-bottom:8px"><div class="tip-label">${p.type}</div><div class="tip-text">${p.text.slice(0,100)}...</div></div>`).join(''):'<div style="font-size:13px;color:var(--text-dim);padding:0.5rem 0">No posts scheduled.</div>';
+  document.getElementById('cal-detail').style.display='block';
+  document.getElementById('cal-detail').dataset.key=key;
+};
+window.addCalPost=function(){
+  const key=document.getElementById('cal-detail').dataset.key;
+  const type=document.getElementById('g-type')?document.getElementById('g-type').value:'Post';
+  const content=document.getElementById('g-text')?document.getElementById('g-text').innerText:'Schedule a post here';
+  if(!calPosts[key])calPosts[key]=[];
+  calPosts[key].push({type,text:content});
+  if(uid)setDoc(doc(db,'users',uid,'calendar',key),{posts:calPosts[key]},{merge:true});
+  renderCalendar();selectCalDay(parseInt(key.split('-')[2]));
+};
+
+// CLIENTS
+window.addClient=function(){
+  if(!requirePlan('agency','Agency Feature','Managing multiple clients is an Agency plan feature.'))return;
+  const name=prompt('Client business name?');if(!name)return;
+  clients.push({name,leads:[],notes:''});
+  if(uid)setDoc(doc(db,'users',uid,'agency','clients'),{clients},{merge:true});
+  renderClients();
+};
+function renderClients(){
+  const tabs=document.getElementById('client-tabs');
+  const content=document.getElementById('client-content');
+  if(!clients.length){tabs.innerHTML='';content.innerHTML='<div class="empty"><i data-lucide="briefcase"></i>Add your first client</div>';lucide.createIcons();return;}
+  if(!selectedClient)selectedClient=clients[0].name;
+  tabs.innerHTML=clients.map(c=>`<div class="client-chip btn ${c.name===selectedClient?'active':''}" onclick="selectClient('${c.name}')">${c.name}</div>`).join('');
+  const c=clients.find(cl=>cl.name===selectedClient)||clients[0];
+  content.innerHTML=`<div style="font-size:13px;color:var(--text-muted);margin-bottom:1rem">Managing <strong style="color:var(--text)">${c.name}</strong></div>
+    <div class="metrics" style="margin-bottom:1rem">
+      <div class="metric neu-sm"><div class="m-label">Leads</div><div class="m-value">${(c.leads||[]).length}</div></div>
+      <div class="metric neu-sm"><div class="m-label">Hot</div><div class="m-value">${(c.leads||[]).filter(l=>l.status==='Hot').length}</div></div>
+    </div>
+    <button class="btn-gold" style="padding:9px 16px;font-size:12px" onclick="addClientLead()">+ Add lead for ${c.name}</button>`;
+  lucide.createIcons();
+}
+window.selectClient=function(name){selectedClient=name;renderClients();};
+window.addClientLead=function(){
+  const n=prompt('Lead name?');if(!n)return;
+  const c=clients.find(cl=>cl.name===selectedClient);if(!c)return;
+  if(!c.leads)c.leads=[];
+  c.leads.push({name:n,status:'New'});
+  if(uid)setDoc(doc(db,'users',uid,'agency','clients'),{clients},{merge:true});
+  renderClients();
+};
+window.genReport=function(){
+  if(!requirePlan('agency','Agency Feature','PDF reports are an Agency plan feature.'))return;
+  const c=clients.find(cl=>cl.name===selectedClient)||{name:'Client'};
+  const d=new Date();
+  const w=window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Report - ${c.name}</title><style>body{font-family:Georgia,serif;max-width:700px;margin:40px auto;color:#1a1a1a;line-height:1.6;}h1{color:#c49a4e;border-bottom:2px solid #c49a4e;padding-bottom:10px;}table{width:100%;border-collapse:collapse;}td,th{padding:10px;border-bottom:1px solid #eee;}th{background:#f9f5ee;}.footer{margin-top:3rem;font-size:12px;color:#888;border-top:1px solid #eee;padding-top:1rem;}</style></head><body><h1>Performance Report</h1><p><strong>Client:</strong> ${c.name}<br><strong>Prepared by:</strong> BusinessBoost AI / Axis Agency<br><strong>Period:</strong> ${d.toLocaleString('default',{month:'long'})} ${d.getFullYear()}</p><h2>Lead Pipeline</h2><table><tr><th>Metric</th><th>Value</th></tr><tr><td>Total Leads</td><td>${(c.leads||[]).length}</td></tr><tr><td>Hot Leads</td><td>${(c.leads||[]).filter(l=>l.status==='Hot').length}</td></tr></table><h2>Recommendations</h2><ul><li>Continue consistent content publishing</li><li>Follow up with warm leads this week</li><li>Consider a referral program</li></ul><div class="footer">Generated by BusinessBoost AI · Axis Agency · ${d.toLocaleDateString()}</div></body></html>`);
+  w.document.close();w.print();
+};
+
+// ONBOARDING
+let obGoal='';
+window.obNext=function(step){
+  document.querySelectorAll('.onboard-step').forEach(s=>s.classList.remove('active'));
+  document.getElementById('os'+step).classList.add('active');
+  for(let i=1;i<=3;i++)document.getElementById('pd'+i).classList.toggle('done',i<=step);
+};
+window.setGoal=function(el,goal){
+  obGoal=goal;
+  document.querySelectorAll('.onboard-step .btn').forEach(b=>{b.style.background='';b.style.boxShadow='';});
+  el.style.background='var(--bg-dark)';el.style.boxShadow='var(--neu-inset-sm)';
+};
+window.finishOnboard=async function(){
+  biz.name=document.getElementById('ob-bizname').value.trim()||'My Business';
+  biz.product=document.getElementById('ob-product').value.trim()||'our products';
+  biz.audience=document.getElementById('ob-audience').value.trim()||'our customers';
+  biz.industry=document.getElementById('ob-industry').value||'General';
+  biz.goal=obGoal||'Grow my business';
+  if(uid)await setDoc(doc(db,'users',uid),{biz,plan:userPlan,onboarded:true},{merge:true});
+  launchApp();
+};
+
+// LEADS / PROFILE
+window.toggleForm=function(){document.getElementById('add-form').classList.toggle('show');};
+window.saveLead=async function(){
+  const name=document.getElementById('f-name').value.trim();if(!name)return;
+  const lead={name,value:document.getElementById('f-val').value.trim(),source:document.getElementById('f-src').value.trim(),status:document.getElementById('f-status').value,note:document.getElementById('f-note').value.trim(),createdAt:serverTimestamp()};
+  if(uid)await addDoc(collection(db,'users',uid,'leads'),lead);
+  leads.unshift({...lead,createdAt:new Date()});
+  ['f-name','f-val','f-src','f-note'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('add-form').classList.remove('show');
+  renderLeads();
+};
+window.saveProfile=async function(){
+  biz.name=document.getElementById('s-bizname').value.trim();
+  biz.product=document.getElementById('s-product').value.trim();
+  biz.audience=document.getElementById('s-audience').value.trim();
+  biz.industry=document.getElementById('s-industry').value.trim();
+  if(uid)await setDoc(doc(db,'users',uid),{biz},{merge:true});
+  document.getElementById('dash-sub').textContent=`Welcome back to ${biz.name}!`;
+  alert('Profile saved!');
+};
+
+// AUTH
+window.switchTab=function(tab){
+  document.querySelectorAll('.auth-tab').forEach((t,i)=>t.classList.toggle('active',(tab==='login'&&i===0)||(tab==='signup'&&i===1)));
+  document.getElementById('name-field').style.display=tab==='signup'?'block':'none';
+  document.getElementById('auth-submit').textContent=tab==='signup'?'Create account':'Sign in';
+  document.getElementById('auth-error').style.display='none';
+};
+window.handleEmail=async function(){
+  const email=document.getElementById('a-email').value.trim();
+  const pass=document.getElementById('a-pass').value;
+  const name=document.getElementById('a-name').value.trim();
+  const isSignup=document.getElementById('auth-submit').textContent==='Create account';
+  const err=document.getElementById('auth-error');err.style.display='none';
+  try{
+    if(isSignup){const c=await createUserWithEmailAndPassword(auth,email,pass);if(name)await updateProfile(c.user,{displayName:name});}
+    else{await signInWithEmailAndPassword(auth,email,pass);}
+  }catch(e){err.textContent=e.message.replace('Firebase:','').replace(/\(auth[^)]*\)/,'').trim();err.style.display='block';}
+};
+window.handleGoogle=async function(){
+  try{await signInWithPopup(auth,gp);}
+  catch(e){const err=document.getElementById('auth-error');err.textContent=e.message;err.style.display='block';}
+};
+window.doSignOut=async function(){await signOut(auth);};
+window.go=function(page,el){
+  if(page==='calendar'&&!requirePlan('starter','Starter Feature','The Content Calendar is available on Starter and above.'))return;
+  if(page==='agency'&&!requirePlan('agency','Agency Feature','Client Manager is an Agency plan exclusive.'))return;
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  if(el)el.classList.add('active');
+  if(page==='agency')renderClients();
+  lucide.createIcons();
+};
+window.updateToneOptions=function(){};
+setTimeout(()=>lucide.createIcons(),200);
+</script>
+</body>
+</html>
