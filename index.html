@@ -523,296 +523,109 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   </div>
 </div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, getDocs, query, orderBy, doc, setDoc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script>
+firebase.initializeApp({
+  apiKey:"AIzaSyC8UW52mL08bGoNw8TsrhOe9OvPy4VB6Do",
+  authDomain:"businessboost-ai.firebaseapp.com",
+  projectId:"businessboost-ai",
+  storageBucket:"businessboost-ai.firebasestorage.app",
+  messagingSenderId:"92085558775",
+  appId:"1:92085558775:web:5648dad6377fc56114a2f2"
+});
+const auth = firebase.auth();
+const db = firebase.firestore();
+const gp = new firebase.auth.GoogleAuthProvider();
 
-const fbApp = initializeApp({apiKey:"AIzaSyC8UW52mL08bGoNw8TsrhOe9OvPy4VB6Do",authDomain:"businessboost-ai.firebaseapp.com",projectId:"businessboost-ai",storageBucket:"businessboost-ai.firebasestorage.app",messagingSenderId:"92085558775",appId:"1:92085558775:web:5648dad6377fc56114a2f2"});
-const auth = getAuth(fbApp), db = getFirestore(fbApp), gp = new GoogleAuthProvider();
 let uid=null, leads=[], contentUsed=0, biz={name:'',product:'',audience:'',industry:'',goal:''}, userPlan='free', calPosts={}, clients=[], selectedClient=null, calYear=2026, calMonth=5;
 
-// PLAN LEVELS
-const PLANS = {free:0, starter:1, growth:2, agency:3};
-function planLevel(){ return PLANS[userPlan]||0; }
-function requirePlan(min, title, msg){ if(planLevel()<PLANS[min]){showLock(title,msg);return false;}return true; }
-function showLock(title,msg){ document.getElementById('modal-title').textContent=title; document.getElementById('modal-msg').textContent=msg; document.getElementById('lock-modal').classList.add('show'); }
+const PLANS={free:0,starter:1,growth:2,agency:3};
+function planLevel(){return PLANS[userPlan]||0;}
+function requirePlan(min,title,msg){if(planLevel()<PLANS[min]){showLock(title,msg);return false;}return true;}
+function showLock(title,msg){document.getElementById('modal-title').textContent=title;document.getElementById('modal-msg').textContent=msg;document.getElementById('lock-modal').classList.add('show');}
 
-// TEMPLATES ENGINE
-const TEMPLATES = [
-  {id:'ig-announce',name:'Product Launch',icon:'🚀',platform:'instagram',plan:'free',desc:'Announce a new product or service',tone:'excited'},
-  {id:'ig-daily',name:'Daily Inspiration',icon:'✨',platform:'instagram',plan:'free',desc:'Engaging daily post for followers',tone:'friendly'},
-  {id:'email-welcome',name:'Welcome Email',icon:'👋',platform:'email',plan:'free',desc:'Greet new customers warmly',tone:'warm'},
-  {id:'fb-promo',name:'Weekend Promo',icon:'🎉',platform:'facebook',plan:'free',desc:'Drive weekend sales and foot traffic',tone:'urgent'},
-  {id:'wa-followup',name:'Follow-up Message',icon:'💬',platform:'whatsapp',plan:'free',desc:'Re-engage a potential customer',tone:'friendly'},
-  {id:'ig-story',name:'Behind the Scenes',icon:'🎬',platform:'instagram',plan:'starter',desc:'Show your process and build trust'},
-  {id:'email-promo',name:'Flash Sale Email',icon:'⚡',platform:'email',plan:'starter',desc:'Drive urgent sales with a time-limited offer'},
-  {id:'google-search',name:'Google Search Ad',icon:'🔍',platform:'google',plan:'starter',desc:'Appear at the top of Google search results'},
-  {id:'ig-testimonial',name:'Customer Review',icon:'⭐',platform:'instagram',plan:'starter',desc:'Share a customer success story'},
-  {id:'li-thought',name:'LinkedIn Insight',icon:'💼',platform:'linkedin',plan:'starter',desc:'Establish authority in your industry'},
-  {id:'twitter-hot',name:'Trending Tweet',icon:'🔥',platform:'twitter',plan:'starter',desc:'Join the conversation and go viral'},
-  {id:'email-newsletter',name:'Monthly Newsletter',icon:'📰',platform:'email',plan:'starter',desc:'Keep customers informed and engaged'},
-  {id:'ig-giveaway',name:'Giveaway Post',icon:'🎁',platform:'instagram',plan:'growth',desc:'Grow your following fast with a giveaway'},
-  {id:'email-reactivate',name:'Win-back Email',icon:'💌',platform:'email',plan:'growth',desc:'Re-engage customers who went quiet'},
-  {id:'fb-retarget',name:'Retargeting Ad',icon:'🎯',platform:'facebook',plan:'growth',desc:'Convert visitors who didn\'t buy'},
-  {id:'ig-collab',name:'Collab Pitch',icon:'🤝',platform:'instagram',plan:'growth',desc:'Pitch a collaboration to another brand'},
-  {id:'email-vip',name:'VIP Exclusive',icon:'👑',platform:'email',plan:'growth',desc:'Reward your best customers'},
-  {id:'google-display',name:'Display Ad Copy',icon:'🖼️',platform:'google',plan:'growth',desc:'Eye-catching Google display ad'},
-  {id:'ig-seasonal',name:'Seasonal Campaign',icon:'🌟',platform:'instagram',plan:'growth',desc:'Tie your product to a season or holiday'},
-  {id:'email-sequence',name:'3-Part Email Series',icon:'📬',platform:'email',plan:'growth',desc:'Nurture leads with a drip sequence'},
-  {id:'press-release',name:'Press Release',icon:'📢',platform:'linkedin',plan:'agency',desc:'Announce big news professionally'},
-  {id:'client-report',name:'Client Report Copy',icon:'📊',platform:'email',plan:'agency',desc:'Professional results summary for clients'},
-  {id:'bulk-content',name:'10-Post Bundle',icon:'📦',platform:'instagram',plan:'agency',desc:'Generate 10 unique posts at once'},
-  {id:'pitch-deck',name:'Sales Pitch Script',icon:'🎤',platform:'linkedin',plan:'agency',desc:'Compelling script for sales calls'},
-  {id:'brand-voice',name:'Brand Voice Guide',icon:'🎨',platform:'email',plan:'agency',desc:'Define your business tone and style'},
-];
+// AUTH
+window.switchTab=function(tab){
+  document.querySelectorAll('.auth-tab').forEach((t,i)=>t.classList.toggle('active',(tab==='login'&&i===0)||(tab==='signup'&&i===1)));
+  document.getElementById('name-field').style.display=tab==='signup'?'block':'none';
+  document.getElementById('auth-submit').textContent=tab==='signup'?'Create account':'Sign in';
+  document.getElementById('auth-error').style.display='none';
+};
 
-function buildContent(template, type, tone){
-  const b=biz.name||'our business', p=biz.product||'our products', a=biz.audience||'our customers', ind=biz.industry||'our industry';
-  const tones={friendly:'warm and personal',professional:'polished and expert',urgent:'bold and action-driven',fun:'playful and energetic',luxury:'premium and exclusive'};
-  const toneStr=tones[tone]||'engaging';
+window.handleEmail=async function(){
+  const email=document.getElementById('a-email').value.trim();
+  const pass=document.getElementById('a-pass').value;
+  const name=document.getElementById('a-name').value.trim();
+  const isSignup=document.getElementById('auth-submit').textContent==='Create account';
+  const err=document.getElementById('auth-error');
+  err.style.display='none';
+  try{
+    if(isSignup){
+      const cred=await auth.createUserWithEmailAndPassword(email,pass);
+      if(name)await cred.user.updateProfile({displayName:name});
+    }else{
+      await auth.signInWithEmailAndPassword(email,pass);
+    }
+  }catch(e){
+    err.textContent=e.code+': '+e.message;
+    err.style.display='block';
+  }
+};
 
-  const contents = {
-    'ig-announce':`🚀 BIG NEWS from ${b}!\n\nWe're thrilled to introduce ${p} — designed specifically for ${a}.\n\nThis is the moment you've been waiting for. Whether you're a first-timer or a loyal fan, this one's for you.\n\n✅ Premium quality\n✅ Made with care\n✅ Available now\n\nTap the link in our bio to explore. Limited availability — don't miss out!\n\n#NewLaunch #${b.replace(/\s/g,'')} #${ind.replace(/\s/g,'')}`,
-    'ig-daily':`Good ${getTimeOfDay()}, beautiful people! ✨\n\nAt ${b}, we believe that ${p} should make your day better, not harder.\n\nHere's our promise to ${a}: we show up every single day with quality, care, and a little extra love in everything we do.\n\n💛 What's making your day great today? Tell us in the comments!\n\n#${b.replace(/\s/g,'')} #Motivation #${ind.replace(/\s/g,'')} #SmallBusiness`,
-    'email-welcome':`Subject: Welcome to ${b} — we're so glad you're here! 🎉\n\nHi [First Name],\n\nWelcome to the ${b} family! We're absolutely thrilled to have you with us.\n\nWe're here to help ${a} like you with ${p}. From now on, expect:\n\n→ Exclusive tips and offers straight to your inbox\n→ First access to new products and services\n→ A team that genuinely cares about your success\n\nAs a welcome gift, use code WELCOME10 for 10% off your first order.\n\nWarm regards,\nThe ${b} Team`,
-    'fb-promo':`⚡ WEEKEND SPECIAL — Don't scroll past this!\n\n${b} is running a limited-time offer on ${p} this weekend ONLY.\n\n🔥 Special pricing available Friday through Sunday\n🔥 Perfect for ${a}\n🔥 Stock is limited — first come, first served\n\nDM us NOW or click the link to grab yours before it's gone!\n\n📍 ${b} | Open this weekend`,
-    'wa-followup':`Hi [Name]! 👋\n\nThis is [Your Name] from ${b}. Just checking in to see if you had any questions about ${p}?\n\nA lot of ${a} find that it really helps with [specific benefit]. I'd love to help you find the perfect fit.\n\nNo pressure at all — just here if you need anything! 😊\n\nReply anytime,\n${b}`,
-    'ig-story':`📸 BEHIND THE SCENES at ${b}!\n\nEver wondered how we make ${p}? Here's a sneak peek at our process...\n\n🔧 Step 1: We start with only the best materials\n❤️ Step 2: Every detail is crafted with care\n✨ Step 3: Quality checked before it reaches you\n\nThis is why ${a} keep coming back — because we never cut corners.\n\nSwipe to see more! 👉\n\n#BehindTheScenes #MadeWithLove #${b.replace(/\s/g,'')}`,
-    'email-promo':`Subject: ⚡ 24 HOURS ONLY — Your exclusive deal inside\n\n[First Name], this one's just for you.\n\nFor the next 24 hours, ${b} is offering an exclusive deal on ${p} — and we want you to be the first to know.\n\n✂️ Use code FLASH24 at checkout\n⏰ Expires midnight tonight\n🎯 Made for ${a} like you\n\nThis won't last. Tap below to claim your deal now.\n\n[CLAIM YOUR DEAL →]\n\nThe ${b} Team`,
-    'google-search':`Headline 1: ${b} — ${p}\nHeadline 2: Trusted by ${a}\nHeadline 3: Limited Offer — Act Now\n\nDescription: Discover why hundreds of ${a} choose ${b} for ${p}. Premium quality, fast delivery, satisfaction guaranteed. Shop now and save.`,
-    'ig-testimonial':`⭐⭐⭐⭐⭐ Real words from a real customer:\n\n"[Customer name] says: I've tried a lot of options but ${b}'s ${p} is honestly the best I've found. As someone who is ${a}, I really appreciate the quality and how easy it was to work with them."\n\n— [Customer Name], happy ${b} customer\n\nYour story could be next. 💛 DM us or tap the link in bio.\n\n#CustomerLove #Testimonial #${b.replace(/\s/g,'')}`,
-    'li-thought':`After working in the ${ind} space, here's the one thing I wish someone told me earlier:\n\nMost businesses focus on selling — but the best ones focus on solving.\n\nAt ${b}, we don't just offer ${p}. We solve a real problem for ${a}:\n[Insert the main problem your product solves]\n\nThe businesses that win aren't always the biggest. They're the ones that listen.\n\nWhat's the best piece of advice you've received in business? I'd love to know 👇\n\n#${ind.replace(/\s/g,'')} #BusinessTips #Entrepreneurship`,
-    'twitter-hot':`Hot take: ${a} deserve better than average ${p}.\n\nThat's exactly why we built ${b}.\n\nThread on what makes us different 🧵👇`,
-    'email-newsletter':`Subject: ${b} Monthly Update — Here's what's new 📰\n\nHi [First Name],\n\nAnother great month at ${b}! Here's a quick roundup of what's been happening:\n\n🆕 WHAT'S NEW\n→ [New product/service update]\n→ [Upcoming event or offer]\n\n💡 TIP OF THE MONTH\nFor ${a}, the best way to get the most from ${p} is to [practical tip].\n\n❤️ CUSTOMER SPOTLIGHT\n"[Short testimonial from a recent customer]"\n\nUntil next month,\nThe ${b} Team\n\nP.S. Forward this to a friend who might benefit — we appreciate every referral!`,
-    'ig-giveaway':`🎁 GIVEAWAY TIME! We're giving away [prize] to one lucky winner!\n\nTo enter:\n1️⃣ Follow @${b.replace(/\s/g,'').toLowerCase()}\n2️⃣ Like this post ❤️\n3️⃣ Tag 2 friends in the comments below\n\nBonus entry: Share this to your story!\n\nWinner announced [date]. Open to all ${a}.\n\nGood luck everyone! 🤞\n\n#Giveaway #${b.replace(/\s/g,'')} #Win #Free`,
-    'email-reactivate':`Subject: We miss you, [First Name] 💌\n\nHi [First Name],\n\nWe noticed it's been a while since we last connected, and honestly — we miss having you around.\n\nA lot has changed at ${b} since you last visited. We've improved ${p} and we think you're really going to love what's new.\n\nAs a thank you for being part of our journey, here's a personal offer just for you:\n\n🎁 [Special offer/discount code]\n\nNo strings attached. Just our way of saying we'd love to have you back.\n\nWith care,\nThe ${b} Team`,
-    'fb-retarget':`Still thinking about it? 🤔\n\nYou checked out ${b}'s ${p} — and we totally get it. Big decisions deserve thought.\n\nBut here's what ${a} keep telling us after they finally go for it:\n\n"I wish I'd done this sooner."\n\nWe want you to feel that too. Ready when you are 👇\n\n[Shop Now]`,
-    'ig-collab':`Hey @[Brand]! 👋\n\nI'm [Name] from ${b} — we create ${p} for ${a}.\n\nI've been following your work and I think there's a really exciting collab opportunity here. Our audiences align perfectly, and together we could create something genuinely valuable.\n\nWould you be open to a quick chat? DM us or email [email] — we'd love to explore this!\n\n#Collab #Partnership #${ind.replace(/\s/g,'')}`,
-    'email-vip':`Subject: You're a VIP — here's something just for you 👑\n\n[First Name],\n\nYou've been with ${b} for a while now — and that means the world to us.\n\nAs one of our most valued customers, we want to give you something special:\n\n👑 [Exclusive offer/early access/special gift]\n\nThis isn't available to anyone else. It's our way of saying thank you for being part of the ${b} story.\n\nYou deserve it.\n\nWith gratitude,\nThe ${b} Team`,
-    'google-display':`[Banner ad copy]\n\nHEADLINE: ${b} — Built for ${a}\nSUB: Premium ${p} that actually delivers\nCTA: Discover More →\n\n[Smaller text]: Trusted by hundreds of satisfied customers. Quality guaranteed.`,
-    'ig-seasonal':`'Tis the season for ${p}! 🌟\n\nAt ${b}, we've put together something special for [Season/Holiday] — because ${a} deserve a little extra magic this time of year.\n\n🎄 [Special seasonal offer or product]\n📦 Order by [date] for guaranteed delivery\n💛 Gift-ready packaging available\n\nShop our seasonal collection via the link in bio. Don't wait — these always sell out!\n\n#[Season] #${b.replace(/\s/g,'')} #SeasonalSale`,
-    'email-sequence':`--- EMAIL 1 (Day 0): The Introduction ---\nSubject: Hey [Name], here's what ${b} is all about\n\n"We're not just another ${ind} business. Here's why we're different..." [Your unique story]\n\n--- EMAIL 2 (Day 3): The Value ---\nSubject: The #1 thing ${a} get wrong about ${p}\n\n"Most people think [common misconception]. Here's the truth..." [Educational content]\n\n--- EMAIL 3 (Day 7): The Offer ---\nSubject: Ready to take the next step, [Name]?\n\n"Here's our special offer for new subscribers: [Offer]. Valid for 48 hours only." [CTA]`,
-    'press-release':`FOR IMMEDIATE RELEASE\n\n${b} Announces [News/Achievement/Launch]\n\n[City, Date] — ${b}, a leading provider of ${p} for ${a}, today announced [key news].\n\n"[Quote from founder/CEO about the significance of this announcement]," said [Name], [Title] of ${b}.\n\n[Second paragraph: Context and details about the announcement]\n\n[Third paragraph: Impact on customers and the ${ind} industry]\n\nAbout ${b}:\n${b} provides ${p} to ${a}. Founded in [year], the company is committed to [mission statement].\n\nMedia Contact:\n[Name] | [Email] | [Phone]`,
-    'client-report':`PERFORMANCE REPORT — [Client Name]\nPrepared by ${b} | [Month] [Year]\n\n📊 EXECUTIVE SUMMARY\nThis month, we focused on growing [Client]'s online presence through targeted content and lead generation strategies.\n\n✅ KEY RESULTS\n→ Leads generated: [X]\n→ Content pieces published: [X]\n→ Engagement rate: [X]%\n→ Top performing platform: [Platform]\n\n📈 WHAT WORKED BEST\n[Top 3 strategies that drove results]\n\n🎯 NEXT MONTH'S FOCUS\n[3 priorities for the coming month]\n\n[Your name] | ${b} | [Contact]`,
-    'bulk-content':`📦 10-POST BUNDLE for ${b}\n\nPost 1: Product highlight — "Meet ${p}: built for ${a}"\nPost 2: Customer story — "Here's what [customer] said about us..."\nPost 3: Behind the scenes — "This is how we make ${p}"\nPost 4: Tip of the week — "The #1 tip for ${a} this week"\nPost 5: Offer post — "This week only: [offer on ${p}]"\nPost 6: Question post — "What's your biggest challenge with [problem]?"\nPost 7: Milestone — "We just hit [milestone]! Thank you ${a}!"\nPost 8: Education — "Did you know? [fact about ${ind}]"\nPost 9: Engagement — "Caption this photo of [product/team]!"\nPost 10: CTA — "Ready to experience ${p}? Here's how to get started"`,
-    'pitch-deck':`SALES CALL SCRIPT — ${b}\n\nOPENING (30 seconds):\n"Hi [Name], thanks for taking the time. I'm [Your name] from ${b}. We help ${a} with ${p}, and I think there might be a great fit here. Is it okay if I take 10 minutes to learn more about your situation?"\n\nDISCOVERY:\n"What's your biggest challenge right now with [relevant problem]?"\n"How long has that been an issue?"\n"What have you tried so far?"\n\nPITCH:\n"Based on what you've shared, I think ${p} could really help you [solve specific problem]. Here's how it works..." [Explain solution]\n\nCLOSE:\n"Does this feel like a fit? I'd love to get you started. We have [offer]. What do you think?"\n\nOBJECTION HANDLING:\n"Too expensive?" → "I understand. Most of our clients find they make back the investment within [timeframe] through [benefit]."\n"Need to think?" → "Of course! What specific questions can I answer to help you decide?"`,
-    'brand-voice':`BRAND VOICE GUIDE — ${b}\n\n🎨 WHO WE ARE\n${b} is a ${ind} business that provides ${p} to ${a}.\n\n🗣️ OUR TONE\n• Friendly but professional\n• Confident but not arrogant\n• Warm and approachable\n• Clear and jargon-free\n\n✅ WE ALWAYS...\n• Lead with the customer's benefit\n• Use "you" more than "we"\n• Tell stories over facts\n• End with a clear next step\n\n❌ WE NEVER...\n• Use corporate buzzwords\n• Make promises we can't keep\n• Ignore customer feedback\n• Sound robotic or templated\n\n💬 EXAMPLE PHRASES\nInstead of: "We provide solutions for..."\nSay: "We help ${a} with..."\n\nInstead of: "Our product features..."\nSay: "You'll love how ${p} helps you..."\n\n📝 CONTENT PILLARS\n1. Education — teach ${a} something valuable\n2. Inspiration — motivate and connect\n3. Promotion — offers and product highlights\n4. Community — stories, reviews, engagement`,
-  };
+window.handleGoogle=async function(){
+  try{
+    await auth.signInWithPopup(gp);
+  }catch(e){
+    const err=document.getElementById('auth-error');
+    err.textContent=e.code+': '+e.message;
+    err.style.display='block';
+  }
+};
 
-  if(template && contents[template]) return contents[template];
+window.doSignOut=async function(){await auth.signOut();};
 
-  // Fallback by type
-  const fallbacks = {
-    instagram: `✨ Exciting things are happening at ${b}!\n\nWe're proud to offer ${p} crafted specifically for ${a}.\n\nEvery detail matters to us — because you matter to us.\n\n💛 Follow us for daily updates, tips, and exclusive offers.\n\nTap the link in bio to learn more!\n\n#${b.replace(/\s/g,'')} #${ind.replace(/\s/g,'')} #SmallBusiness #LocalBusiness`,
-    email: `Subject: A message from ${b} just for you\n\nHi [First Name],\n\nAt ${b}, everything we do is designed with ${a} in mind.\n\nOur ${p} has helped countless customers achieve their goals — and we'd love to do the same for you.\n\nClick below to discover what's possible.\n\n[Get Started →]\n\nWarm regards,\nThe ${b} Team`,
-    google: `Headline: ${b} — Premium ${p}\nDescription: Trusted by ${a} across the region. Discover ${p} from ${b}. Quality guaranteed. Contact us today.`,
-    facebook: `🌟 ${b} is here to help ${a} with ${p}.\n\nWe've helped hundreds of customers just like you — and we'd love to add your success story to the list.\n\n👇 Click below to find out more.\n\n[Learn More]`,
-    twitter: `${a} — you deserve the best ${p} out there.\n\nThat's why we built ${b}.\n\nJoin us 👇`,
-    whatsapp: `Hi [Name]! This is [Your name] from ${b}. Just wanted to reach out about ${p} — I think it'd be a great fit for you. Would you like to know more? 😊`,
-    linkedin: `Proud moment at ${b} — we've been helping ${a} with ${p} and the results speak for themselves.\n\nIf you're in the ${ind} space, I'd love to connect and share what's been working for us.\n\n#${ind.replace(/\s/g,'')} #BusinessGrowth`,
-    promo: `🎉 SPECIAL OFFER from ${b}!\n\n${p} is now available at a special price — this weekend only!\n\nPerfect for ${a} who want quality without compromise.\n\n⏰ Limited time. Don't miss it!\n\n[Claim Offer →]`,
-  };
-  return fallbacks[type] || fallbacks['instagram'];
-}
-
-function getTimeOfDay(){ const h=new Date().getHours(); if(h<12)return'morning'; if(h<17)return'afternoon'; return'evening'; }
-
-window.generateContent = function(){
-  const type=document.getElementById('g-type').value;
-  const tone=document.getElementById('g-tone').value;
-  const tplCards=document.querySelectorAll('.tpl-card.selected');
-  const selectedTpl=tplCards.length?tplCards[0].dataset.id:null;
-  const box=document.getElementById('g-output');
-  box.innerHTML='<div class="loading"><div class="dot"></div><div class="dot"></div><div class="dot"></div> Crafting your content...</div>';
-  setTimeout(()=>{
-    const result=buildContent(selectedTpl,type,tone);
-    box.innerHTML=`<button class="btn copy-btn" onclick="doCopy()"><i data-lucide="copy"></i> Copy</button><span id="g-text">${result.replace(/\n/g,'<br>')}</span>`;
-    contentUsed++; document.getElementById('m-content').textContent=contentUsed;
-    if(uid) addDoc(collection(db,'users',uid,'content'),{type,content:result,createdAt:serverTimestamp()});
+// AUTH STATE
+auth.onAuthStateChanged(async function(user){
+  if(user){
+    uid=user.uid;
+    const name=user.displayName||user.email.split('@')[0];
+    const initials=name.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
+    document.getElementById('u-av').textContent=initials;
+    document.getElementById('u-name').textContent=name;
+    document.getElementById('auth-screen').style.display='none';
+    const snap=await db.collection('users').doc(uid).get();
+    if(snap.exists){
+      const data=snap.data();
+      userPlan=data.plan||'free';
+      if(data.biz)biz={...biz,...data.biz};
+      document.getElementById('u-plan').textContent=(userPlan.charAt(0).toUpperCase()+userPlan.slice(1))+' plan';
+      document.getElementById('plan-pill').textContent=userPlan.toUpperCase();
+      document.getElementById('s-plan-pill').textContent=userPlan.toUpperCase();
+      const lsnap=await db.collection('users').doc(uid).collection('leads').orderBy('createdAt','desc').get();
+      leads=lsnap.docs.map(d=>({id:d.id,...d.data()}));
+      const csnap=await db.collection('users').doc(uid).collection('content').get();
+      contentUsed=csnap.size;
+      document.getElementById('m-content').textContent=contentUsed;
+      const calsnap=await db.collection('users').doc(uid).collection('calendar').get();
+      calsnap.docs.forEach(d=>{calPosts[d.id]=d.data().posts||[];});
+      const agsnap=await db.collection('users').doc(uid).collection('agency').doc('clients').get();
+      if(agsnap.exists)clients=agsnap.data().clients||[];
+      if(data.onboarded){launchApp();}
+      else{document.getElementById('onboard-screen').style.display='flex';}
+    }else{
+      await db.collection('users').doc(uid).set({plan:'free',email:user.email,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+      document.getElementById('onboard-screen').style.display='flex';
+    }
     lucide.createIcons();
-  },800);
-};
-
-window.doCopy=function(){
-  const el=document.getElementById('g-text');
-  if(el)navigator.clipboard.writeText(el.innerText).catch(()=>{});
-  const btn=document.querySelector('#g-output .copy-btn');
-  if(btn){btn.innerHTML='<i data-lucide="check"></i> Copied!';lucide.createIcons();setTimeout(()=>{btn.innerHTML='<i data-lucide="copy"></i> Copy';lucide.createIcons();},2000);}
-};
-
-function renderTemplates(){
-  const grid=document.getElementById('templates-grid');
-  const planNames={free:'Free',starter:'Starter',growth:'Growth',agency:'Agency'};
-  const planColors={free:'badge-free',starter:'badge-starter',growth:'badge-growth',agency:'badge-agency'};
-  grid.innerHTML=TEMPLATES.map(t=>{
-    const locked=planLevel()<(PLANS[t.plan]||0);
-    return`<div class="tpl-card neu-sm ${locked?'locked':''}" data-id="${t.id}" onclick="selectTemplate(this,'${t.id}','${t.plan}')">
-      ${locked?`<i data-lucide="lock" class="tpl-lock"></i>`:''}
-      <div class="tpl-icon">${t.icon}</div>
-      <div class="tpl-name">${t.name}</div>
-      <div class="tpl-desc">${t.desc}</div>
-      <div class="tpl-badge ${planColors[t.plan]}">${planNames[t.plan].toUpperCase()}</div>
-    </div>`;
-  }).join('');
-  lucide.createIcons();
-}
-
-window.selectTemplate=function(el,id,plan){
-  if(planLevel()<(PLANS[plan]||0)){
-    const names={starter:'Starter',growth:'Growth',agency:'Agency'};
-    showLock(`${names[plan]} feature`,`This template is available on the ${names[plan]} plan. Upgrade to unlock all ${TEMPLATES.filter(t=>t.plan===plan).length}+ ${names[plan]} templates.`);
-    return;
+  }else{
+    uid=null;
+    document.getElementById('auth-screen').style.display='flex';
+    document.getElementById('onboard-screen').style.display='none';
+    document.getElementById('app-screen').style.display='none';
   }
-  document.querySelectorAll('.tpl-card').forEach(c=>c.classList.remove('selected'));
-  el.classList.add('selected');
-  el.style.boxShadow='var(--neu-inset)';
-  // Set type dropdown
-  const tpl=TEMPLATES.find(t=>t.id===id);
-  if(tpl){
-    const sel=document.getElementById('g-type');
-    if(sel)for(let o of sel.options){if(o.value===tpl.platform){sel.value=tpl.platform;break;}}
-  }
-  generateContent();
-};
-
-// LEADS
-function renderLeads(){
-  const hot=leads.filter(l=>l.status==='Hot').length;
-  const warm=leads.filter(l=>l.status==='Warm').length;
-  const rate=leads.length?Math.round(hot/leads.length*100)+'%':'—';
-  ['m-leads','a-total'].forEach(id=>document.getElementById(id).textContent=leads.length);
-  ['m-hot','a-hot'].forEach(id=>document.getElementById(id).textContent=hot);
-  document.getElementById('a-warm').textContent=warm;
-  document.getElementById('a-rate').textContent=rate;
-  document.getElementById('lead-count').textContent=leads.length+' leads';
-
-  const bClass={Hot:'badge-hot',Warm:'badge-warm',New:'badge-new'};
-  const rowHtml=l=>`<div class="lead-row"><div><div class="lead-name">${l.name}</div><div class="lead-src">${l.source||''}${l.note?` · ${l.note}`:''}</div></div><div class="lead-r">${l.value?`<span class="lead-val">SCR ${l.value}</span>`:''}<span class="${bClass[l.status]||'badge-new'}">${l.status}</span></div></div>`;
-  const html=leads.length?leads.map(rowHtml).join(''):'<div class="empty"><i data-lucide="users"></i>No leads yet</div>';
-  document.getElementById('all-leads').innerHTML=html;
-  document.getElementById('dash-leads').innerHTML=leads.length?leads.slice(0,4).map(rowHtml).join(''):'<div class="empty"><i data-lucide="inbox"></i>No leads yet</div>';
-
-  const colors={Hot:'#4ade80',Warm:'#fbbf24',New:'#60a5fa'};
-  document.getElementById('pipeline-bars').innerHTML=leads.length
-    ?['Hot','Warm','New'].map(s=>{const c=leads.filter(l=>l.status===s).length;const p=leads.length?Math.round(c/leads.length*100):0;return`<div class="bar-row"><div class="bar-label"><span>${s}</span><span>${c} (${p}%)</span></div><div class="bar-track"><div class="bar-fill" style="width:${p}%;background:${colors[s]}"></div></div></div>`;}).join('')
-    :'<div class="empty"><i data-lucide="bar-chart-2"></i>Add leads to see breakdown</div>';
-
-  if(planLevel()>=2){
-    document.getElementById('competitor-panel').style.display='block';
-    document.getElementById('competitor-list').innerHTML=`
-      <div class="health-row"><span class="health-label">Do you post consistently?</span><span class="health-val ${leads.length>5?'health-good':'health-warn'}">${leads.length>5?'✅ Yes':'⚠️ Needs work'}</span></div>
-      <div class="health-row"><span class="health-label">Do you follow up with leads?</span><span class="health-val health-good">✅ Using this tool</span></div>
-      <div class="health-row"><span class="health-label">Are you on Google?</span><span class="health-val health-warn">⚠️ Check your listing</span></div>
-      <div class="health-row"><span class="health-label">Do you collect reviews?</span><span class="health-val health-warn">⚠️ Start asking customers</span></div>
-      <div class="health-row"><span class="health-label">Email marketing active?</span><span class="health-val health-good">✅ Use our templates</span></div>`;
-  }
-  lucide.createIcons();
-  updateHealthScore();
-}
-
-function updateHealthScore(){
-  const score=Math.min(100,Math.round((leads.length*5)+(contentUsed*3)+(planLevel()*15)+20));
-  const color=score>=70?'#4ade80':score>=40?'#fbbf24':'#f87171';
-  const el=document.getElementById('health-score');
-  if(!el)return;
-  const r=44,circ=2*Math.PI*r,dash=circ*(score/100);
-  el.innerHTML=`<div class="score-ring"><svg width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="${r}" fill="none" stroke="var(--bg-dark)" stroke-width="8" box-shadow="var(--neu-inset-sm)"/><circle cx="50" cy="50" r="${r}" fill="none" stroke="${color}" stroke-width="8" stroke-dasharray="${dash} ${circ-dash}" stroke-linecap="round"/></svg><div class="score-num">${score}</div></div><div style="text-align:center;font-size:12px;color:var(--text-muted)">Business Health Score</div><div style="text-align:center;font-size:11px;color:var(--text-dim);margin-top:4px">${score>=70?'Great work! Keep it up.':score>=40?'Good progress. Add more leads!':'Add leads and content to improve.'}</div>`;
-}
-
-function renderDailyTip(){
-  const tips=[
-    {label:'Growth Tip',text:`Post about ${biz.product||'your product'} 3x this week. Consistency beats perfection every time.`},
-    {label:'Lead Tip',text:`Follow up with your warm leads today. A simple "just checking in" message converts more than you think.`},
-    {label:'Content Tip',text:`Share a behind-the-scenes photo of your business. Authentic content builds the most trust.`},
-    {label:'Sales Tip',text:`Ask your last 3 happy customers for a review. Social proof is your most powerful sales tool.`},
-    {label:'Marketing Tip',text:`Update your Google Business listing this week. 46% of searches are for local businesses.`},
-    {label:'Engagement Tip',text:`Reply to every comment on your posts today. The algorithm rewards engaged accounts.`},
-    {label:'Business Tip',text:`The easiest sale is to an existing customer. Reach out to past clients with something new.`},
-  ];
-  const tip=tips[new Date().getDay()%tips.length];
-  const el=document.getElementById('daily-tip');
-  if(el)el.innerHTML=`<div class="tip-card inset-sm"><div class="tip-label">${tip.label}</div><div class="tip-text">${tip.text.replace(/\{biz\}/g,biz.name||'your business')}</div></div>`;
-}
-
-// CALENDAR
-function renderCalendar(){
-  const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
-  document.getElementById('cal-month').textContent=`${months[calMonth]} ${calYear}`;
-  const firstDay=(new Date(calYear,calMonth,1).getDay()+6)%7;
-  const daysInMonth=new Date(calYear,calMonth+1,0).getDate();
-  const grid=document.getElementById('cal-grid');
-  let html='';
-  for(let i=0;i<firstDay;i++)html+=`<div></div>`;
-  for(let d=1;d<=daysInMonth;d++){
-    const key=`${calYear}-${calMonth}-${d}`;
-    const hasPosts=calPosts[key]&&calPosts[key].length>0;
-    html+=`<div class="cal-day ${hasPosts?'has-post inset-sm':''}" onclick="selectCalDay(${d})">${d}${hasPosts?`<br><span style="font-size:8px;color:var(--accent)">•</span>`:''}</div>`;
-  }
-  grid.innerHTML=html;
-}
-
-window.calNav=function(dir){calMonth+=dir;if(calMonth>11){calMonth=0;calYear++;}if(calMonth<0){calMonth=11;calYear--;}renderCalendar();};
-window.selectCalDay=function(day){
-  const key=`${calYear}-${calMonth}-${day}`;
-  const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  document.getElementById('cal-detail-date').textContent=`${day} ${months[calMonth]} ${calYear}`;
-  const posts=calPosts[key]||[];
-  const detail=document.getElementById('cal-detail-content');
-  detail.innerHTML=posts.length?posts.map(p=>`<div class="tip-card inset-sm" style="margin-bottom:8px"><div class="tip-label">${p.type}</div><div class="tip-text">${p.text.slice(0,100)}...</div></div>`).join(''):'<div style="font-size:13px;color:var(--text-dim);padding:0.5rem 0">No posts scheduled.</div>';
-  document.getElementById('cal-detail').style.display='block';
-  document.getElementById('cal-detail').dataset.key=key;
-};
-window.addCalPost=function(){
-  const key=document.getElementById('cal-detail').dataset.key;
-  const type=document.getElementById('g-type')?document.getElementById('g-type').value:'Post';
-  const content=document.getElementById('g-text')?document.getElementById('g-text').innerText:'Schedule a post here';
-  if(!calPosts[key])calPosts[key]=[];
-  calPosts[key].push({type,text:content});
-  if(uid)setDoc(doc(db,'users',uid,'calendar',key),{posts:calPosts[key]},{merge:true});
-  renderCalendar();selectCalDay(parseInt(key.split('-')[2]));
-};
-
-// CLIENTS
-window.addClient=function(){
-  if(!requirePlan('agency','Agency Feature','Managing multiple clients is an Agency plan feature.'))return;
-  const name=prompt('Client business name?');if(!name)return;
-  clients.push({name,leads:[],notes:''});
-  if(uid)setDoc(doc(db,'users',uid,'agency','clients'),{clients},{merge:true});
-  renderClients();
-};
-function renderClients(){
-  const tabs=document.getElementById('client-tabs');
-  const content=document.getElementById('client-content');
-  if(!clients.length){tabs.innerHTML='';content.innerHTML='<div class="empty"><i data-lucide="briefcase"></i>Add your first client</div>';lucide.createIcons();return;}
-  if(!selectedClient)selectedClient=clients[0].name;
-  tabs.innerHTML=clients.map(c=>`<div class="client-chip btn ${c.name===selectedClient?'active':''}" onclick="selectClient('${c.name}')">${c.name}</div>`).join('');
-  const c=clients.find(cl=>cl.name===selectedClient)||clients[0];
-  content.innerHTML=`<div style="font-size:13px;color:var(--text-muted);margin-bottom:1rem">Managing <strong style="color:var(--text)">${c.name}</strong></div>
-    <div class="metrics" style="margin-bottom:1rem">
-      <div class="metric neu-sm"><div class="m-label">Leads</div><div class="m-value">${(c.leads||[]).length}</div></div>
-      <div class="metric neu-sm"><div class="m-label">Hot</div><div class="m-value">${(c.leads||[]).filter(l=>l.status==='Hot').length}</div></div>
-    </div>
-    <button class="btn-gold" style="padding:9px 16px;font-size:12px" onclick="addClientLead()">+ Add lead for ${c.name}</button>`;
-  lucide.createIcons();
-}
-window.selectClient=function(name){selectedClient=name;renderClients();};
-window.addClientLead=function(){
-  const n=prompt('Lead name?');if(!n)return;
-  const c=clients.find(cl=>cl.name===selectedClient);if(!c)return;
-  if(!c.leads)c.leads=[];
-  c.leads.push({name:n,status:'New'});
-  if(uid)setDoc(doc(db,'users',uid,'agency','clients'),{clients},{merge:true});
-  renderClients();
-};
-window.genReport=function(){
-  if(!requirePlan('agency','Agency Feature','PDF reports are an Agency plan feature.'))return;
-  const c=clients.find(cl=>cl.name===selectedClient)||{name:'Client'};
-  const d=new Date();
-  const w=window.open('','_blank');
-  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Report - ${c.name}</title><style>body{font-family:Georgia,serif;max-width:700px;margin:40px auto;color:#1a1a1a;line-height:1.6;}h1{color:#c49a4e;border-bottom:2px solid #c49a4e;padding-bottom:10px;}table{width:100%;border-collapse:collapse;}td,th{padding:10px;border-bottom:1px solid #eee;}th{background:#f9f5ee;}.footer{margin-top:3rem;font-size:12px;color:#888;border-top:1px solid #eee;padding-top:1rem;}</style></head><body><h1>Performance Report</h1><p><strong>Client:</strong> ${c.name}<br><strong>Prepared by:</strong> BusinessBoost AI / Axis Agency<br><strong>Period:</strong> ${d.toLocaleString('default',{month:'long'})} ${d.getFullYear()}</p><h2>Lead Pipeline</h2><table><tr><th>Metric</th><th>Value</th></tr><tr><td>Total Leads</td><td>${(c.leads||[]).length}</td></tr><tr><td>Hot Leads</td><td>${(c.leads||[]).filter(l=>l.status==='Hot').length}</td></tr></table><h2>Recommendations</h2><ul><li>Continue consistent content publishing</li><li>Follow up with warm leads this week</li><li>Consider a referral program</li></ul><div class="footer">Generated by BusinessBoost AI · Axis Agency · ${d.toLocaleDateString()}</div></body></html>`);
-  w.document.close();w.print();
-};
+});
 
 // ONBOARDING
 let obGoal='';
@@ -832,54 +645,291 @@ window.finishOnboard=async function(){
   biz.audience=document.getElementById('ob-audience').value.trim()||'our customers';
   biz.industry=document.getElementById('ob-industry').value||'General';
   biz.goal=obGoal||'Grow my business';
-  if(uid)await setDoc(doc(db,'users',uid),{biz,plan:userPlan,onboarded:true},{merge:true});
+  if(uid)await db.collection('users').doc(uid).set({biz,plan:userPlan,onboarded:true},{merge:true});
   launchApp();
 };
 
-// LEADS / PROFILE
+function launchApp(){
+  document.getElementById('onboard-screen').style.display='none';
+  document.getElementById('app-screen').style.display='block';
+  document.getElementById('m-goal').textContent=biz.goal||'—';
+  document.getElementById('dash-sub').textContent=`Welcome to ${biz.name||'your dashboard'}! Let's grow 🚀`;
+  document.getElementById('s-bizname').value=biz.name;
+  document.getElementById('s-product').value=biz.product;
+  document.getElementById('s-audience').value=biz.audience;
+  document.getElementById('s-industry').value=biz.industry;
+  renderTemplates();renderLeads();renderCalendar();renderDailyTip();updateHealthScore();
+  lucide.createIcons();
+}
+
+// LEADS
 window.toggleForm=function(){document.getElementById('add-form').classList.toggle('show');};
 window.saveLead=async function(){
   const name=document.getElementById('f-name').value.trim();if(!name)return;
-  const lead={name,value:document.getElementById('f-val').value.trim(),source:document.getElementById('f-src').value.trim(),status:document.getElementById('f-status').value,note:document.getElementById('f-note').value.trim(),createdAt:serverTimestamp()};
-  if(uid)await addDoc(collection(db,'users',uid,'leads'),lead);
+  const lead={name,value:document.getElementById('f-val').value.trim(),source:document.getElementById('f-src').value.trim(),status:document.getElementById('f-status').value,note:document.getElementById('f-note').value.trim(),createdAt:firebase.firestore.FieldValue.serverTimestamp()};
+  if(uid)await db.collection('users').doc(uid).collection('leads').add(lead);
   leads.unshift({...lead,createdAt:new Date()});
   ['f-name','f-val','f-src','f-note'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('add-form').classList.remove('show');
   renderLeads();
 };
+
 window.saveProfile=async function(){
   biz.name=document.getElementById('s-bizname').value.trim();
   biz.product=document.getElementById('s-product').value.trim();
   biz.audience=document.getElementById('s-audience').value.trim();
   biz.industry=document.getElementById('s-industry').value.trim();
-  if(uid)await setDoc(doc(db,'users',uid),{biz},{merge:true});
+  if(uid)await db.collection('users').doc(uid).set({biz},{merge:true});
   document.getElementById('dash-sub').textContent=`Welcome back to ${biz.name}!`;
   alert('Profile saved!');
 };
 
-// AUTH
-window.switchTab=function(tab){
-  document.querySelectorAll('.auth-tab').forEach((t,i)=>t.classList.toggle('active',(tab==='login'&&i===0)||(tab==='signup'&&i===1)));
-  document.getElementById('name-field').style.display=tab==='signup'?'block':'none';
-  document.getElementById('auth-submit').textContent=tab==='signup'?'Create account':'Sign in';
-  document.getElementById('auth-error').style.display='none';
+// CONTENT
+window.generateContent=function(){
+  const type=document.getElementById('g-type').value;
+  const tone=document.getElementById('g-tone').value;
+  const box=document.getElementById('g-output');
+  box.innerHTML='<div class="loading"><div class="dot"></div><div class="dot"></div><div class="dot"></div> Crafting your content...</div>';
+  setTimeout(async()=>{
+    const result=buildContent(null,type,tone);
+    box.innerHTML=`<button class="btn copy-btn" onclick="doCopy()"><i data-lucide="copy"></i> Copy</button><span id="g-text">${result.replace(/\n/g,'<br>')}</span>`;
+    contentUsed++;document.getElementById('m-content').textContent=contentUsed;
+    if(uid)await db.collection('users').doc(uid).collection('content').add({type,content:result,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+    lucide.createIcons();
+  },800);
 };
-window.handleEmail=async function(){
-  const email=document.getElementById('a-email').value.trim();
-  const pass=document.getElementById('a-pass').value;
-  const name=document.getElementById('a-name').value.trim();
-  const isSignup=document.getElementById('auth-submit').textContent==='Create account';
-  const err=document.getElementById('auth-error');err.style.display='none';
-  try{
-    if(isSignup){const c=await createUserWithEmailAndPassword(auth,email,pass);if(name)await updateProfile(c.user,{displayName:name});}
-    else{await signInWithEmailAndPassword(auth,email,pass);}
-  }catch(e){err.textContent=e.code+' | '+e.message;err.style.display='block';}
+
+window.doCopy=function(){
+  const el=document.getElementById('g-text');
+  if(el)navigator.clipboard.writeText(el.innerText).catch(()=>{});
+  const btn=document.querySelector('#g-output .copy-btn');
+  if(btn){btn.innerHTML='<i data-lucide="check"></i> Copied!';lucide.createIcons();setTimeout(()=>{btn.innerHTML='<i data-lucide="copy"></i> Copy';lucide.createIcons();},2000);}
 };
-window.handleGoogle=async function(){
-  try{await signInWithRedirect(auth,gp);}
-  catch(e){const err=document.getElementById('auth-error');err.textContent=e.message;err.style.display='block';}
+
+window.selectTemplate=function(el,id,plan){
+  if(planLevel()<(PLANS[plan]||0)){
+    const names={starter:'Starter',growth:'Growth',agency:'Agency'};
+    showLock(`${names[plan]} feature`,`This template is available on the ${names[plan]} plan.`);
+    return;
+  }
+  document.querySelectorAll('.tpl-card').forEach(c=>{c.classList.remove('selected');c.style.boxShadow='';});
+  el.classList.add('selected');el.style.boxShadow='var(--neu-inset)';
+  const tpl=TEMPLATES.find(t=>t.id===id);
+  if(tpl){const sel=document.getElementById('g-type');if(sel)for(let o of sel.options){if(o.value===tpl.platform){sel.value=tpl.platform;break;}}}
+  const box=document.getElementById('g-output');
+  box.innerHTML='<div class="loading"><div class="dot"></div><div class="dot"></div><div class="dot"></div> Crafting your content...</div>';
+  setTimeout(async()=>{
+    const result=buildContent(id,document.getElementById('g-type').value,document.getElementById('g-tone').value);
+    box.innerHTML=`<button class="btn copy-btn" onclick="doCopy()"><i data-lucide="copy"></i> Copy</button><span id="g-text">${result.replace(/\n/g,'<br>')}</span>`;
+    contentUsed++;document.getElementById('m-content').textContent=contentUsed;
+    if(uid)await db.collection('users').doc(uid).collection('content').add({type:tpl?tpl.name:'Content',content:result,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+    lucide.createIcons();
+  },800);
 };
-window.doSignOut=async function(){await signOut(auth);};
+
+// CALENDAR
+window.calNav=function(dir){calMonth+=dir;if(calMonth>11){calMonth=0;calYear++;}if(calMonth<0){calMonth=11;calYear--;}renderCalendar();};
+window.selectCalDay=function(day){
+  const key=`${calYear}-${calMonth}-${day}`;
+  const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  document.getElementById('cal-detail-date').textContent=`${day} ${months[calMonth]} ${calYear}`;
+  const posts=calPosts[key]||[];
+  const detail=document.getElementById('cal-detail-content');
+  detail.innerHTML=posts.length?posts.map(p=>`<div class="tip-card inset-sm" style="margin-bottom:8px"><div class="tip-label">${p.type}</div><div class="tip-text">${p.text.slice(0,100)}...</div></div>`).join(''):'<div style="font-size:13px;color:var(--text-dim);padding:0.5rem 0">No posts scheduled.</div>';
+  document.getElementById('cal-detail').style.display='block';
+  document.getElementById('cal-detail').dataset.key=key;
+};
+window.addCalPost=async function(){
+  const key=document.getElementById('cal-detail').dataset.key;
+  const type=document.getElementById('g-type')?document.getElementById('g-type').value:'Post';
+  const content=document.getElementById('g-text')?document.getElementById('g-text').innerText:'Schedule a post here';
+  if(!calPosts[key])calPosts[key]=[];
+  calPosts[key].push({type,text:content});
+  if(uid)await db.collection('users').doc(uid).collection('calendar').doc(key).set({posts:calPosts[key]},{merge:true});
+  renderCalendar();selectCalDay(parseInt(key.split('-')[2]));
+};
+
+// CLIENTS
+window.addClient=async function(){
+  if(!requirePlan('agency','Agency Feature','Managing multiple clients is an Agency plan feature.'))return;
+  const name=prompt('Client business name?');if(!name)return;
+  clients.push({name,leads:[],notes:''});
+  if(uid)await db.collection('users').doc(uid).collection('agency').doc('clients').set({clients},{merge:true});
+  renderClients();
+};
+window.selectClient=function(name){selectedClient=name;renderClients();};
+window.addClientLead=async function(){
+  const n=prompt('Lead name?');if(!n)return;
+  const c=clients.find(cl=>cl.name===selectedClient);if(!c)return;
+  if(!c.leads)c.leads=[];
+  c.leads.push({name:n,status:'New'});
+  if(uid)await db.collection('users').doc(uid).collection('agency').doc('clients').set({clients},{merge:true});
+  renderClients();
+};
+window.genReport=function(){
+  if(!requirePlan('agency','Agency Feature','PDF reports are an Agency plan feature.'))return;
+  const c=clients.find(cl=>cl.name===selectedClient)||{name:'Client',leads:[]};
+  const d=new Date();
+  const w=window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Report - ${c.name}</title><style>body{font-family:Georgia,serif;max-width:700px;margin:40px auto;color:#1a1a1a;line-height:1.6;}h1{color:#c49a4e;border-bottom:2px solid #c49a4e;padding-bottom:10px;}table{width:100%;border-collapse:collapse;}td,th{padding:10px;border-bottom:1px solid #eee;}th{background:#f9f5ee;}.footer{margin-top:3rem;font-size:12px;color:#888;border-top:1px solid #eee;padding-top:1rem;}</style></head><body><h1>Performance Report</h1><p><strong>Client:</strong> ${c.name}<br><strong>Prepared by:</strong> BusinessBoost AI / Axis Agency<br><strong>Period:</strong> ${d.toLocaleString('default',{month:'long'})} ${d.getFullYear()}</p><h2>Lead Pipeline</h2><table><tr><th>Metric</th><th>Value</th></tr><tr><td>Total Leads</td><td>${(c.leads||[]).length}</td></tr><tr><td>Hot Leads</td><td>${(c.leads||[]).filter(l=>l.status==='Hot').length}</td></tr></table><h2>Recommendations</h2><ul><li>Continue consistent content publishing</li><li>Follow up with warm leads this week</li><li>Consider a referral program</li></ul><div class="footer">Generated by BusinessBoost AI · Axis Agency · ${d.toLocaleDateString()}</div></body></html>`);
+  w.document.close();w.print();
+};
+
+
+// TEMPLATES
+const TEMPLATES=[
+  {id:'ig-announce',name:'Product Launch',icon:'🚀',platform:'instagram',plan:'free',desc:'Announce a new product'},
+  {id:'ig-daily',name:'Daily Inspiration',icon:'✨',platform:'instagram',plan:'free',desc:'Engaging daily post'},
+  {id:'email-welcome',name:'Welcome Email',icon:'👋',platform:'email',plan:'free',desc:'Greet new customers'},
+  {id:'fb-promo',name:'Weekend Promo',icon:'🎉',platform:'facebook',plan:'free',desc:'Drive weekend sales'},
+  {id:'wa-followup',name:'Follow-up Message',icon:'💬',platform:'whatsapp',plan:'free',desc:'Re-engage a lead'},
+  {id:'ig-story',name:'Behind the Scenes',icon:'🎬',platform:'instagram',plan:'starter',desc:'Show your process'},
+  {id:'email-promo',name:'Flash Sale Email',icon:'⚡',platform:'email',plan:'starter',desc:'Drive urgent sales'},
+  {id:'google-search',name:'Google Search Ad',icon:'🔍',platform:'google',plan:'starter',desc:'Top of Google results'},
+  {id:'ig-testimonial',name:'Customer Review',icon:'⭐',platform:'instagram',plan:'starter',desc:'Share a success story'},
+  {id:'li-thought',name:'LinkedIn Insight',icon:'💼',platform:'linkedin',plan:'starter',desc:'Build authority'},
+  {id:'email-newsletter',name:'Monthly Newsletter',icon:'📰',platform:'email',plan:'starter',desc:'Keep customers engaged'},
+  {id:'ig-giveaway',name:'Giveaway Post',icon:'🎁',platform:'instagram',plan:'growth',desc:'Grow your following fast'},
+  {id:'email-reactivate',name:'Win-back Email',icon:'💌',platform:'email',plan:'growth',desc:'Re-engage quiet customers'},
+  {id:'fb-retarget',name:'Retargeting Ad',icon:'🎯',platform:'facebook',plan:'growth',desc:'Convert visitors who left'},
+  {id:'email-vip',name:'VIP Exclusive',icon:'👑',platform:'email',plan:'growth',desc:'Reward best customers'},
+  {id:'ig-seasonal',name:'Seasonal Campaign',icon:'🌟',platform:'instagram',plan:'growth',desc:'Seasonal promotion'},
+  {id:'email-sequence',name:'3-Part Email Series',icon:'📬',platform:'email',plan:'growth',desc:'Nurture leads'},
+  {id:'press-release',name:'Press Release',icon:'📢',platform:'linkedin',plan:'agency',desc:'Announce big news'},
+  {id:'client-report',name:'Client Report Copy',icon:'📊',platform:'email',plan:'agency',desc:'Results summary for clients'},
+  {id:'bulk-content',name:'10-Post Bundle',icon:'📦',platform:'instagram',plan:'agency',desc:'10 unique posts at once'},
+  {id:'pitch-deck',name:'Sales Pitch Script',icon:'🎤',platform:'linkedin',plan:'agency',desc:'Script for sales calls'},
+  {id:'brand-voice',name:'Brand Voice Guide',icon:'🎨',platform:'email',plan:'agency',desc:'Define your tone and style'},
+];
+
+function getTimeOfDay(){const h=new Date().getHours();if(h<12)return'morning';if(h<17)return'afternoon';return'evening';}
+
+function buildContent(id,type,tone){
+  const b=biz.name||'our business',p=biz.product||'our products',a=biz.audience||'our customers',ind=biz.industry||'our industry';
+  const contents={
+    'ig-announce':`🚀 BIG NEWS from ${b}!\n\nWe're thrilled to introduce ${p} — designed for ${a}.\n\n✅ Premium quality\n✅ Made with care\n✅ Available now\n\nTap the link in our bio!\n\n#NewLaunch #${b.replace(/\s/g,'')} #${ind.replace(/\s/g,'')}`,
+    'ig-daily':`Good ${getTimeOfDay()}! ✨\n\nAt ${b}, we believe ${p} should make your day better.\n\nHere's our promise to ${a}: quality, care, and love in everything we do.\n\n💛 What's making your day great? Tell us in the comments!\n\n#${b.replace(/\s/g,'')} #SmallBusiness`,
+    'email-welcome':`Subject: Welcome to ${b} — we're so glad you're here! 🎉\n\nHi [First Name],\n\nWelcome to the ${b} family!\n\nWe help ${a} with ${p}. Expect:\n→ Exclusive tips and offers\n→ First access to new products\n→ A team that cares\n\nUse code WELCOME10 for 10% off your first order.\n\nWarm regards,\nThe ${b} Team`,
+    'fb-promo':`⚡ WEEKEND SPECIAL!\n\n${b} has a limited offer on ${p} this weekend ONLY.\n\n🔥 Special pricing Fri–Sun\n🔥 Perfect for ${a}\n🔥 Limited stock\n\nDM us NOW or click the link!`,
+    'wa-followup':`Hi [Name]! 👋\n\nThis is [Your Name] from ${b}. Just checking in about ${p}?\n\nI'd love to help you find the perfect fit. No pressure — just here if you need anything! 😊\n\n${b}`,
+    'ig-story':`📸 BEHIND THE SCENES at ${b}!\n\nHere's how we make ${p}:\n\n🔧 Step 1: Best materials only\n❤️ Step 2: Crafted with care\n✨ Step 3: Quality checked\n\nThis is why ${a} keep coming back!\n\n#BehindTheScenes #${b.replace(/\s/g,'')}`,
+    'email-promo':`Subject: ⚡ 24 HOURS ONLY — Your exclusive deal inside\n\n[First Name], for the next 24 hours ${b} has a special deal on ${p}.\n\n✂️ Use code FLASH24\n⏰ Expires midnight tonight\n\n[CLAIM YOUR DEAL →]\n\nThe ${b} Team`,
+    'google-search':`Headline 1: ${b} — ${p}\nHeadline 2: Trusted by ${a}\nHeadline 3: Limited Offer — Act Now\n\nDescription: Discover why ${a} choose ${b}. Premium quality, fast service, satisfaction guaranteed.`,
+    'ig-testimonial':`⭐⭐⭐⭐⭐\n\n"${b}'s ${p} is the best I've found. As ${a}, I really appreciate the quality."\n\n— Happy ${b} customer\n\nYour story could be next 💛 DM us or tap the link in bio.`,
+    'li-thought':`After working in ${ind}, here's what I wish someone told me:\n\nThe best businesses don't focus on selling — they focus on solving.\n\nAt ${b}, we don't just offer ${p}. We solve a real problem for ${a}.\n\nWhat's the best business advice you've received? 👇\n\n#${ind.replace(/\s/g,'')} #BusinessTips`,
+    'email-newsletter':`Subject: ${b} Monthly Update 📰\n\nHi [First Name],\n\nAnother great month at ${b}!\n\n🆕 WHAT'S NEW\n→ [New update]\n→ [Upcoming offer]\n\n💡 TIP: For ${a}, the best way to use ${p} is [tip].\n\nUntil next month,\nThe ${b} Team`,
+    'ig-giveaway':`🎁 GIVEAWAY!\n\nTo enter:\n1️⃣ Follow us\n2️⃣ Like this post ❤️\n3️⃣ Tag 2 friends below\n\nWinner announced [date]. Open to all ${a}!\n\n#Giveaway #${b.replace(/\s/g,'')} #Win`,
+    'email-reactivate':`Subject: We miss you, [First Name] 💌\n\nHi [First Name],\n\nIt's been a while — and we miss you!\n\nA lot has changed at ${b}. We've improved ${p} and think you'll love what's new.\n\n🎁 Here's a personal offer: [discount code]\n\nThe ${b} Team`,
+    'fb-retarget':`Still thinking about it? 🤔\n\nYou checked out ${b}'s ${p} — we get it. Big decisions take time.\n\nBut here's what ${a} tell us after they go for it:\n"I wish I'd done this sooner."\n\n[Shop Now]`,
+    'email-vip':`Subject: You're a VIP 👑\n\n[First Name], you've been with ${b} for a while — and that means the world.\n\nAs one of our most valued customers:\n👑 [Exclusive offer/early access]\n\nThis is just for you.\n\nWith gratitude,\nThe ${b} Team`,
+    'ig-seasonal':`'Tis the season! 🌟\n\n${b} has something special for [Season] — because ${a} deserve a little extra magic.\n\n🎁 [Seasonal offer]\n📦 Order by [date]\n\nShop via the link in bio!\n\n#${b.replace(/\s/g,'')} #SeasonalSale`,
+    'email-sequence':`--- EMAIL 1 (Day 0) ---\nSubject: Hey [Name], here's what ${b} is all about\n"We're not just another ${ind} business. Here's why..."\n\n--- EMAIL 2 (Day 3) ---\nSubject: The #1 thing ${a} get wrong about ${p}\n"Most people think [misconception]. Here's the truth..."\n\n--- EMAIL 3 (Day 7) ---\nSubject: Ready to take the next step?\n"Here's our special offer: [Offer]. Valid 48 hours only."`,
+    'press-release':`FOR IMMEDIATE RELEASE\n\n${b} Announces [News]\n\n[City, Date] — ${b}, a provider of ${p} for ${a}, today announced [news].\n\n"[Quote from founder]," said [Name], [Title] of ${b}.\n\n[Details paragraph]\n\nMedia Contact: [Name] | [Email]`,
+    'client-report':`PERFORMANCE REPORT — [Client Name]\nPrepared by ${b} | [Month] [Year]\n\n📊 KEY RESULTS\n→ Leads generated: [X]\n→ Content published: [X]\n→ Top platform: [Platform]\n\n📈 WHAT WORKED\n[Top strategies]\n\n🎯 NEXT MONTH\n[3 priorities]`,
+    'bulk-content':`10-POST BUNDLE for ${b}\n\n1. Product highlight: "Meet ${p}: built for ${a}"\n2. Customer story: "Here's what [customer] said..."\n3. Behind the scenes: "How we make ${p}"\n4. Tip: "The #1 tip for ${a} this week"\n5. Offer: "This week: [offer on ${p}]"\n6. Question: "What's your biggest challenge with [problem]?"\n7. Milestone: "We just hit [milestone]! Thank you!"\n8. Education: "Did you know? [fact about ${ind}]"\n9. Engagement: "Caption this photo!"\n10. CTA: "Ready to experience ${p}? Here's how"`,
+    'pitch-deck':`SALES CALL SCRIPT — ${b}\n\nOPENING: "Hi [Name], I'm [Your name] from ${b}. We help ${a} with ${p}. Can I take 10 mins to learn about your situation?"\n\nDISCOVERY:\n"What's your biggest challenge with [problem]?"\n"How long has that been an issue?"\n\nPITCH: "Based on what you've shared, ${p} can help you [solve problem]."\n\nCLOSE: "Does this feel like a fit? We have [offer]. What do you think?"`,
+    'brand-voice':`BRAND VOICE GUIDE — ${b}\n\n🎨 WHO WE ARE\n${b} provides ${p} to ${a} in the ${ind} space.\n\n🗣️ OUR TONE\n• Friendly but professional\n• Confident but not arrogant\n• Clear and jargon-free\n\n✅ WE ALWAYS...\n• Lead with customer benefit\n• Use "you" more than "we"\n• End with a clear next step\n\n❌ WE NEVER...\n• Use buzzwords\n• Sound robotic\n• Ignore feedback`,
+  };
+  if(id&&contents[id])return contents[id];
+  const fallbacks={instagram:`✨ Exciting things at ${b}!\n\nWe offer ${p} for ${a}.\n\n💛 Follow for daily updates and exclusive offers!\n\n#${b.replace(/\s/g,'')} #SmallBusiness`,email:`Subject: A message from ${b}\n\nHi [First Name],\n\n${b} helps ${a} with ${p}.\n\n[Get Started →]\n\nThe ${b} Team`,google:`Headline: ${b} — ${p}\nDescription: Trusted by ${a}. Quality guaranteed.`,facebook:`🌟 ${b} helps ${a} with ${p}.\n\n[Learn More]`,twitter:`${a} deserve the best ${p}.\n\nThat's why we built ${b} 👇`,whatsapp:`Hi [Name]! This is [Your name] from ${b}. Wanted to reach out about ${p} — would you like to know more? 😊`,linkedin:`Proud to be helping ${a} with ${p} at ${b}.\n\n#${ind.replace(/\s/g,'')} #BusinessGrowth`,promo:`🎉 SPECIAL OFFER from ${b}!\n\n${p} at a special price — this weekend only!\n\n[Claim Offer →]`};
+  return fallbacks[type]||fallbacks['instagram'];
+}
+
+function renderTemplates(){
+  const grid=document.getElementById('templates-grid');
+  if(!grid)return;
+  const planNames={free:'Free',starter:'Starter',growth:'Growth',agency:'Agency'};
+  const planColors={free:'badge-free',starter:'badge-starter',growth:'badge-growth',agency:'badge-agency'};
+  grid.innerHTML=TEMPLATES.map(t=>{
+    const locked=planLevel()<(PLANS[t.plan]||0);
+    return`<div class="tpl-card neu-sm ${locked?'locked':''}" data-id="${t.id}" onclick="selectTemplate(this,'${t.id}','${t.plan}')">
+      ${locked?`<i data-lucide="lock" class="tpl-lock"></i>`:''}
+      <div class="tpl-icon">${t.icon}</div>
+      <div class="tpl-name">${t.name}</div>
+      <div class="tpl-desc">${t.desc}</div>
+      <div class="tpl-badge ${planColors[t.plan]}">${planNames[t.plan].toUpperCase()}</div>
+    </div>`;
+  }).join('');
+  lucide.createIcons();
+}
+
+function renderLeads(){
+  const hot=leads.filter(l=>l.status==='Hot').length;
+  const warm=leads.filter(l=>l.status==='Warm').length;
+  const rate=leads.length?Math.round(hot/leads.length*100)+'%':'—';
+  ['m-leads','a-total'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=leads.length;});
+  ['m-hot','a-hot'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=hot;});
+  const aw=document.getElementById('a-warm');if(aw)aw.textContent=warm;
+  const ar=document.getElementById('a-rate');if(ar)ar.textContent=rate;
+  const lc=document.getElementById('lead-count');if(lc)lc.textContent=leads.length+' leads';
+  const bClass={Hot:'badge-hot',Warm:'badge-warm',New:'badge-new'};
+  const rowHtml=l=>`<div class="lead-row"><div><div class="lead-name">${l.name}</div><div class="lead-src">${l.source||''}${l.note?' · '+l.note:''}</div></div><div class="lead-r">${l.value?`<span class="lead-val">SCR ${l.value}</span>`:''}<span class="${bClass[l.status]||'badge-new'}">${l.status}</span></div></div>`;
+  const html=leads.length?leads.map(rowHtml).join(''):'<div class="empty"><i data-lucide="users"></i>No leads yet</div>';
+  const al=document.getElementById('all-leads');if(al)al.innerHTML=html;
+  const dl=document.getElementById('dash-leads');if(dl)dl.innerHTML=leads.length?leads.slice(0,4).map(rowHtml).join(''):'<div class="empty"><i data-lucide="inbox"></i>No leads yet</div>';
+  const colors={Hot:'#4ade80',Warm:'#fbbf24',New:'#60a5fa'};
+  const pb=document.getElementById('pipeline-bars');
+  if(pb)pb.innerHTML=leads.length?['Hot','Warm','New'].map(s=>{const c=leads.filter(l=>l.status===s).length;const p=leads.length?Math.round(c/leads.length*100):0;return`<div class="bar-row"><div class="bar-label"><span>${s}</span><span>${c} (${p}%)</span></div><div class="bar-track"><div class="bar-fill" style="width:${p}%;background:${colors[s]}"></div></div></div>`;}).join(''):'<div class="empty"><i data-lucide="bar-chart-2"></i>Add leads to see breakdown</div>';
+  if(planLevel()>=2){
+    const cp=document.getElementById('competitor-panel');if(cp)cp.style.display='block';
+    const cl=document.getElementById('competitor-list');
+    if(cl)cl.innerHTML=`<div class="health-row"><span class="health-label">Post consistently?</span><span class="health-val ${leads.length>5?'health-good':'health-warn'}">${leads.length>5?'✅ Yes':'⚠️ Needs work'}</span></div><div class="health-row"><span class="health-label">Follow up with leads?</span><span class="health-val health-good">✅ Using this tool</span></div><div class="health-row"><span class="health-label">On Google?</span><span class="health-val health-warn">⚠️ Check your listing</span></div><div class="health-row"><span class="health-label">Collecting reviews?</span><span class="health-val health-warn">⚠️ Start asking customers</span></div>`;
+  }
+  lucide.createIcons();
+  updateHealthScore();
+}
+
+function updateHealthScore(){
+  const score=Math.min(100,Math.round((leads.length*5)+(contentUsed*3)+(planLevel()*15)+20));
+  const color=score>=70?'#4ade80':score>=40?'#fbbf24':'#f87171';
+  const el=document.getElementById('health-score');if(!el)return;
+  const r=44,circ=2*Math.PI*r,dash=circ*(score/100);
+  el.innerHTML=`<div class="score-ring"><svg width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="${r}" fill="none" stroke="var(--bg-dark)" stroke-width="8"/><circle cx="50" cy="50" r="${r}" fill="none" stroke="${color}" stroke-width="8" stroke-dasharray="${dash} ${circ-dash}" stroke-linecap="round"/></svg><div class="score-num">${score}</div></div><div style="text-align:center;font-size:12px;color:var(--text-muted)">Health Score</div><div style="text-align:center;font-size:11px;color:var(--text-dim);margin-top:4px">${score>=70?'Great work!':score>=40?'Good progress — add more leads!':'Add leads and content to improve.'}</div>`;
+}
+
+function renderDailyTip(){
+  const tips=[
+    {label:'Growth Tip',text:'Post 3x this week. Consistency beats perfection every time.'},
+    {label:'Lead Tip',text:'Follow up with your warm leads today. A simple check-in converts more than you think.'},
+    {label:'Content Tip',text:'Share a behind-the-scenes photo. Authentic content builds the most trust.'},
+    {label:'Sales Tip',text:'Ask your last 3 happy customers for a review. Social proof is your best sales tool.'},
+    {label:'Marketing Tip',text:'Update your Google Business listing. 46% of searches are for local businesses.'},
+    {label:'Engagement Tip',text:'Reply to every comment on your posts today. The algorithm rewards engaged accounts.'},
+    {label:'Business Tip',text:'The easiest sale is to an existing customer. Reach out to past clients with something new.'},
+  ];
+  const tip=tips[new Date().getDay()%tips.length];
+  const el=document.getElementById('daily-tip');
+  if(el)el.innerHTML=`<div class="tip-card inset-sm"><div class="tip-label">${tip.label}</div><div class="tip-text">${tip.text}</div></div>`;
+}
+
+function renderCalendar(){
+  const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const cm=document.getElementById('cal-month');if(cm)cm.textContent=`${months[calMonth]} ${calYear}`;
+  const firstDay=(new Date(calYear,calMonth,1).getDay()+6)%7;
+  const daysInMonth=new Date(calYear,calMonth+1,0).getDate();
+  const grid=document.getElementById('cal-grid');if(!grid)return;
+  let html='';
+  for(let i=0;i<firstDay;i++)html+=`<div></div>`;
+  for(let d=1;d<=daysInMonth;d++){
+    const key=`${calYear}-${calMonth}-${d}`;
+    const hasPosts=calPosts[key]&&calPosts[key].length>0;
+    html+=`<div class="cal-day ${hasPosts?'has-post inset-sm':''}" onclick="selectCalDay(${d})">${d}</div>`;
+  }
+  grid.innerHTML=html;
+}
+
+function renderClients(){
+  const tabs=document.getElementById('client-tabs');
+  const content=document.getElementById('client-content');
+  if(!tabs||!content)return;
+  if(!clients.length){tabs.innerHTML='';content.innerHTML='<div class="empty"><i data-lucide="briefcase"></i>Add your first client</div>';lucide.createIcons();return;}
+  if(!selectedClient)selectedClient=clients[0].name;
+  tabs.innerHTML=clients.map(c=>`<div class="client-chip btn ${c.name===selectedClient?'active':''}" onclick="selectClient('${c.name}')">${c.name}</div>`).join('');
+  const c=clients.find(cl=>cl.name===selectedClient)||clients[0];
+  content.innerHTML=`<div style="font-size:13px;color:var(--text-muted);margin-bottom:1rem">Managing <strong style="color:var(--text)">${c.name}</strong></div><div class="metrics" style="margin-bottom:1rem"><div class="metric neu-sm"><div class="m-label">Leads</div><div class="m-value">${(c.leads||[]).length}</div></div><div class="metric neu-sm"><div class="m-label">Hot</div><div class="m-value">${(c.leads||[]).filter(l=>l.status==='Hot').length}</div></div></div><button class="btn-gold" style="padding:9px 16px;font-size:12px" onclick="addClientLead()">+ Add lead for ${c.name}</button>`;
+  lucide.createIcons();
+}
+
 window.go=function(page,el){
   if(page==='calendar'&&!requirePlan('starter','Starter Feature','The Content Calendar is available on Starter and above.'))return;
   if(page==='agency'&&!requirePlan('agency','Agency Feature','Client Manager is an Agency plan exclusive.'))return;
