@@ -8,26 +8,33 @@
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 <style>
 :root {
-  --bg: #f0ede8; --bg-light: #f7f4f0; --bg-dark: #e4e0da;
-  --accent: #c49a4e; --accent-dim: #a37d38;
-  --accent-light: #f5e6cc;
-  --text: #2a2420; --text-muted: #6b6560; --text-dim: #a09890;
-  --neu-shadow: 6px 6px 14px #d4d0cb, -4px -4px 10px #ffffff;
-  --neu-shadow-sm: 3px 3px 8px #d4d0cb, -2px -2px 6px #ffffff;
-  --neu-inset: inset 4px 4px 10px #d4d0cb, inset -3px -3px 8px #ffffff;
-  --neu-inset-sm: inset 2px 2px 6px #d4d0cb, inset -2px -2px 5px #ffffff;
-  --r: 16px; --r-sm: 10px; --r-xs: 6px;
+  --bg: #e8eaf6;
+  --bg-light: #f0f2ff;
+  --bg-dark: #d8daf0;
+  --accent: #5c6bc0;
+  --accent-2: #ec407a;
+  --accent-3: #26a69a;
+  --accent-dim: #3949ab;
+  --accent-light: #e8eaf6;
+  --text: #1a1c2e; --text-muted: #555870; --text-dim: #9094b0;
+  --neu-shadow: 6px 6px 16px #c5c8e0, -4px -4px 12px #ffffff;
+  --neu-shadow-sm: 3px 3px 8px #c5c8e0, -2px -2px 6px #ffffff;
+  --neu-inset: inset 4px 4px 10px #c5c8e0, inset -3px -3px 8px #ffffff;
+  --neu-inset-sm: inset 2px 2px 6px #c5c8e0, inset -2px -2px 5px #ffffff;
+  --glass: rgba(255,255,255,0.55);
+  --glass-border: rgba(255,255,255,0.8);
+  --r: 18px; --r-sm: 12px; --r-xs: 8px;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
-.neu{background:var(--bg);border-radius:var(--r);box-shadow:var(--neu-shadow);}
-.neu-sm{background:var(--bg);border-radius:var(--r-sm);box-shadow:var(--neu-shadow-sm);}
+body{font-family:'DM Sans',sans-serif;background:linear-gradient(135deg,#e8eaf6 0%,#e3f2fd 40%,#fce4ec 100%);background-attachment:fixed;color:var(--text);min-height:100vh;}
+.neu{background:var(--glass);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:var(--r);box-shadow:var(--neu-shadow);border:1px solid var(--glass-border);}
+.neu-sm{background:var(--glass);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:var(--r-sm);box-shadow:var(--neu-shadow-sm);border:1px solid var(--glass-border);}
 .inset{background:var(--bg);border-radius:var(--r-sm);box-shadow:var(--neu-inset);}
 .inset-sm{background:var(--bg);border-radius:var(--r-xs);box-shadow:var(--neu-inset-sm);}
 .btn{background:var(--bg);border-radius:var(--r-sm);box-shadow:var(--neu-shadow-sm);border:none;cursor:pointer;color:var(--text);font-family:'DM Sans',sans-serif;transition:all 0.15s;}
 .btn:hover{box-shadow:4px 4px 10px #1e1e20,-3px -3px 8px #3a3a3c;}
 .btn:active{box-shadow:var(--neu-inset-sm);transform:scale(0.98);}
-.btn-gold{background:linear-gradient(135deg,#e8b86d,#c49a4e);color:#1a1a1a;font-weight:600;border-radius:var(--r-sm);border:none;cursor:pointer;font-family:'DM Sans',sans-serif;transition:opacity 0.2s,transform 0.1s;box-shadow:3px 3px 10px #1a1a1a,-1px -1px 4px #3a3a3c;}
+.btn-gold{background:linear-gradient(135deg,#5c6bc0,#3949ab);color:#fff;font-weight:600;border-radius:var(--r-sm);border:none;cursor:pointer;font-family:'DM Sans',sans-serif;transition:opacity 0.2s,transform 0.1s;box-shadow:3px 3px 12px #b0b4d8,-1px -1px 4px #ffffff;}
 .btn-gold:hover{opacity:0.9;}
 .btn-gold:active{transform:scale(0.98);}
 
@@ -36,12 +43,12 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .auth-wrap{width:100%;max-width:420px;}
 .auth-logo{text-align:center;margin-bottom:2.5rem;}
 .auth-logo h1{font-family:'DM Serif Display',serif;font-size:28px;color:var(--text);font-weight:400;}
-.auth-logo h1 span{color:var(--accent);}
+.auth-logo h1 span{background:linear-gradient(135deg,#5c6bc0,#ec407a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
 .auth-logo p{font-size:13px;color:var(--text-muted);margin-top:6px;}
-.auth-card{padding:2.25rem;}
+.auth-card{padding:2.25rem;background:var(--glass);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--glass-border);border-radius:var(--r);}
 .auth-tabs{display:flex;padding:4px;margin-bottom:1.75rem;}
 .auth-tab{flex:1;padding:9px;font-size:13px;font-weight:500;cursor:pointer;border-radius:var(--r-xs);color:var(--text-muted);background:transparent;border:none;font-family:'DM Sans',sans-serif;transition:all 0.2s;}
-.auth-tab.active{background:var(--bg-light);color:var(--text);box-shadow:var(--neu-inset-sm);}
+.auth-tab.active{background:var(--accent);color:#fff;box-shadow:0 2px 8px rgba(92,107,192,0.3);border-radius:var(--r-xs);}
 .field{margin-bottom:1rem;}
 .field label{font-size:11px;color:var(--text-muted);font-weight:500;letter-spacing:0.5px;text-transform:uppercase;display:block;margin-bottom:6px;}
 .field-input{width:100%;padding:12px 14px;font-size:14px;color:var(--text);background:transparent;border:none;outline:none;font-family:'DM Sans',sans-serif;}
@@ -64,25 +71,25 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .onboard-select option{background:var(--bg-dark);}
 .progress{display:flex;gap:6px;margin-bottom:1.75rem;}
 .progress-dot{height:4px;flex:1;border-radius:2px;background:var(--bg-dark);}
-.progress-dot.done{background:var(--accent);}
+.progress-dot.done{background:linear-gradient(135deg,#5c6bc0,#ec407a);}
 
 /* APP */
 #app-screen{display:none;min-height:100vh;}
 .layout{display:flex;min-height:100vh;}
-.sidebar{width:220px;padding:1.5rem 1rem;display:flex;flex-direction:column;position:fixed;height:100vh;overflow-y:auto;z-index:10;background:var(--bg-dark);}
+.sidebar{width:220px;padding:1.5rem 1rem;display:flex;flex-direction:column;position:fixed;height:100vh;overflow-y:auto;z-index:10;background:rgba(255,255,255,0.4);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-right:1px solid var(--glass-border);}
 .sidebar-logo{padding:0.5rem 0.75rem 1.75rem;}
 .sidebar-logo h2{font-family:'DM Serif Display',serif;font-size:20px;font-weight:400;color:var(--text);}
-.sidebar-logo h2 span{color:var(--accent);}
+.sidebar-logo h2 span{background:linear-gradient(135deg,#5c6bc0,#ec407a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
 .sidebar-logo p{font-size:10px;color:var(--text-muted);margin-top:2px;letter-spacing:0.5px;text-transform:uppercase;}
 .nav-section{font-size:10px;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;padding:1rem 0.75rem 0.4rem;}
 .nav-item{display:flex;align-items:center;gap:10px;padding:11px 14px;font-size:13px;color:var(--text-muted);cursor:pointer;border-radius:var(--r-sm);transition:all 0.2s;}
-.nav-item:hover{color:var(--text);}
-.nav-item.active{color:var(--accent);font-weight:600;box-shadow:var(--neu-inset-sm);background:var(--bg);}
+.nav-item:hover{color:var(--accent);background:rgba(92,107,192,0.07);border-radius:var(--r-sm);}
+.nav-item.active{color:var(--accent);font-weight:600;background:rgba(92,107,192,0.12);border-radius:var(--r-sm);}
 .nav-item svg{width:15px;height:15px;flex-shrink:0;}
 .sidebar-bottom{margin-top:auto;padding-top:1rem;}
 .user-card{padding:1rem;margin-top:0.5rem;background:var(--bg);border-radius:var(--r-sm);}
 .user-row{display:flex;align-items:center;gap:10px;margin-bottom:0.875rem;}
-.user-av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#e8b86d,#c49a4e);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#1a1a1a;flex-shrink:0;box-shadow:var(--neu-shadow-sm);}
+.user-av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#5c6bc0,#ec407a);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#fff;flex-shrink:0;box-shadow:0 2px 8px rgba(92,107,192,0.4);}
 .user-name{font-size:13px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .user-plan{font-size:10px;color:var(--text-dim);margin-top:1px;}
 .signout-btn{width:100%;padding:9px;font-size:12px;color:var(--text-muted);display:flex;align-items:center;justify-content:center;gap:6px;}
@@ -91,14 +98,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.25rem;}
 .topbar h1{font-size:22px;font-weight:500;color:var(--text);}
 .topbar p{font-size:13px;color:var(--text-muted);margin-top:2px;}
-.plan-pill{background:var(--accent-light);border:1px solid #c49a4e44;border-radius:20px;padding:5px 14px;font-size:11px;font-weight:600;color:var(--accent-dim);letter-spacing:0.5px;}
+.plan-pill{background:linear-gradient(135deg,#5c6bc0,#3949ab);border-radius:20px;padding:5px 16px;font-size:11px;font-weight:600;color:#fff;letter-spacing:0.5px;box-shadow:0 2px 8px rgba(92,107,192,0.4);}
 
 .page{display:none;flex-direction:column;gap:1.25rem;}
 .page.active{display:flex;}
 
 .metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;}
 .metric{padding:1.25rem;}
-.m-icon{width:36px;height:36px;border-radius:var(--r-xs);background:var(--bg-dark);display:flex;align-items:center;justify-content:center;margin-bottom:0.875rem;box-shadow:var(--neu-shadow-sm);color:var(--accent);}
+.m-icon{width:40px;height:40px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;margin-bottom:0.875rem;color:#fff;}
 .m-icon svg{width:16px;height:16px;}
 .m-label{font-size:11px;color:var(--text-muted);font-weight:500;margin-bottom:4px;}
 .m-value{font-size:26px;font-weight:600;color:var(--text);line-height:1;}
@@ -193,7 +200,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .dot:nth-child(2){animation-delay:0.2s;}.dot:nth-child(3){animation-delay:0.4s;}
 @keyframes pulse{0%,100%{opacity:0.2}50%{opacity:1}}
 
-.tip-card{padding:1rem 1.25rem;margin-bottom:10px;border-left:3px solid var(--accent);background:var(--accent-light);border-radius:0 var(--r-xs) var(--r-xs) 0;}
+.tip-card{padding:1rem 1.25rem;margin-bottom:10px;border-left:3px solid var(--accent);background:rgba(92,107,192,0.08);border-radius:0 var(--r-xs) var(--r-xs) 0;}
 .tip-label{font-size:10px;color:var(--accent);font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;}
 .tip-text{font-size:13px;color:var(--text-muted);line-height:1.6;}
 
@@ -215,6 +222,39 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   .grid2{grid-template-columns:1fr;}
   .metrics{grid-template-columns:1fr 1fr;}
 }
+
+/* SKELETON LOADING */
+.skeleton{background:linear-gradient(90deg,var(--bg-dark) 25%,var(--bg-light) 50%,var(--bg-dark) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:var(--r-xs);}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.skel-line{height:12px;margin-bottom:8px;}
+.skel-line.w60{width:60%;}
+.skel-line.w80{width:80%;}
+.skel-line.w40{width:40%;}
+.skel-circle{width:36px;height:36px;border-radius:50%;}
+
+/* COLORED METRIC ICONS */
+.m-icon-blue{background:linear-gradient(135deg,#5c6bc0,#3949ab);box-shadow:0 4px 12px rgba(92,107,192,0.35);}
+.m-icon-pink{background:linear-gradient(135deg,#ec407a,#c2185b);box-shadow:0 4px 12px rgba(236,64,122,0.35);}
+.m-icon-teal{background:linear-gradient(135deg,#26a69a,#00796b);box-shadow:0 4px 12px rgba(38,166,154,0.35);}
+.m-icon-amber{background:linear-gradient(135deg,#ffa726,#e65100);box-shadow:0 4px 12px rgba(255,167,38,0.35);}
+
+/* GLASS INPUTS */
+.field-input,.gen-input,.gen-select,.form-f,.onboard-input,.onboard-select{color:var(--text);}
+.inset,.inset-sm{background:rgba(255,255,255,0.6);}
+
+/* COLORED SECTION ACCENTS */
+.page-header-accent{height:3px;border-radius:2px;margin-bottom:1.5rem;background:linear-gradient(90deg,#5c6bc0,#ec407a,#26a69a);}
+
+/* BUTTON VARIANTS */
+.btn-outline{background:transparent;border:1.5px solid var(--accent);color:var(--accent);border-radius:var(--r-sm);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s;}
+.btn-outline:hover{background:var(--accent);color:#fff;}
+
+/* CARD HOVER */
+.neu:hover,.neu-sm:hover{transform:translateY(-1px);box-shadow:8px 8px 20px #c5c8e0,-4px -4px 12px #ffffff;}
+.metric{transition:transform 0.2s;}
+
+/* UPGRADE SETTINGS CARD */
+.upgrade-card-featured{border:2px solid rgba(92,107,192,0.4);background:linear-gradient(135deg,rgba(92,107,192,0.08),rgba(236,64,122,0.05));}
 </style>
 </head>
 <body>
@@ -323,15 +363,15 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
           <span class="plan-pill" id="plan-pill">FREE</span>
         </div>
         <div class="metrics">
-          <div class="metric neu"><div class="m-icon"><i data-lucide="users"></i></div><div class="m-label">Total Leads</div><div class="m-value" id="m-leads">0</div><div class="m-sub">in pipeline</div></div>
-          <div class="metric neu"><div class="m-icon"><i data-lucide="flame"></i></div><div class="m-label">Hot Leads</div><div class="m-value" id="m-hot">0</div><div class="m-sub">ready to close</div></div>
-          <div class="metric neu"><div class="m-icon"><i data-lucide="file-text"></i></div><div class="m-label">Content Used</div><div class="m-value" id="m-content">0</div><div class="m-sub">pieces generated</div></div>
-          <div class="metric neu"><div class="m-icon"><i data-lucide="target"></i></div><div class="m-label">Goal</div><div class="m-value" style="font-size:13px;margin-top:4px" id="m-goal">—</div><div class="m-sub">your focus</div></div>
+          <div class="metric neu"><div class="m-icon m-icon-blue"><i data-lucide="users"></i></div><div class="m-label">Total Leads</div><div class="m-value" id="m-leads">0</div><div class="m-sub">in pipeline</div></div>
+          <div class="metric neu"><div class="m-icon m-icon-pink"><i data-lucide="flame"></i></div><div class="m-label">Hot Leads</div><div class="m-value" id="m-hot">0</div><div class="m-sub">ready to close</div></div>
+          <div class="metric neu"><div class="m-icon m-icon-teal"><i data-lucide="file-text"></i></div><div class="m-label">Content Used</div><div class="m-value" id="m-content">0</div><div class="m-sub">pieces generated</div></div>
+          <div class="metric neu"><div class="m-icon m-icon-amber"><i data-lucide="target"></i></div><div class="m-label">Goal</div><div class="m-value" style="font-size:13px;margin-top:4px" id="m-goal">—</div><div class="m-sub">your focus</div></div>
         </div>
         <div class="grid2">
           <div class="panel neu">
             <div class="ph"><div class="pt"><i data-lucide="lightbulb"></i> Today's Tip</div></div>
-            <div id="daily-tip"><div class="loading"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>
+            <div id="daily-tip"><div class="skeleton skel-line w60"></div><div class="skeleton skel-line w80"></div><div class="skeleton skel-line w40" style="margin-top:4px"></div></div>
           </div>
           <div class="panel neu">
             <div class="ph"><div class="pt"><i data-lucide="activity"></i> Business Health</div></div>
@@ -408,10 +448,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
       <div class="page" id="page-analytics">
         <div class="topbar"><div><h1>Analytics</h1><p>Understand what's driving your growth.</p></div></div>
         <div class="metrics">
-          <div class="metric neu"><div class="m-icon"><i data-lucide="users"></i></div><div class="m-label">Total Leads</div><div class="m-value" id="a-total">0</div></div>
-          <div class="metric neu"><div class="m-icon"><i data-lucide="flame"></i></div><div class="m-label">Hot Leads</div><div class="m-value" id="a-hot">0</div></div>
-          <div class="metric neu"><div class="m-icon"><i data-lucide="thermometer"></i></div><div class="m-label">Warm Leads</div><div class="m-value" id="a-warm">0</div></div>
-          <div class="metric neu"><div class="m-icon"><i data-lucide="percent"></i></div><div class="m-label">Hot Rate</div><div class="m-value" id="a-rate">—</div></div>
+          <div class="metric neu"><div class="m-icon m-icon-blue"><i data-lucide="users"></i></div><div class="m-label">Total Leads</div><div class="m-value" id="a-total">0</div></div>
+          <div class="metric neu"><div class="m-icon m-icon-pink"><i data-lucide="flame"></i></div><div class="m-label">Hot Leads</div><div class="m-value" id="a-hot">0</div></div>
+          <div class="metric neu"><div class="m-icon m-icon-amber"><i data-lucide="thermometer"></i></div><div class="m-label">Warm Leads</div><div class="m-value" id="a-warm">0</div></div>
+          <div class="metric neu"><div class="m-icon m-icon-teal"><i data-lucide="percent"></i></div><div class="m-label">Hot Rate</div><div class="m-value" id="a-rate">—</div></div>
         </div>
         <div class="grid2">
           <div class="panel neu">
@@ -420,10 +460,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
           </div>
           <div class="panel neu">
             <div class="ph"><div class="pt"><i data-lucide="globe"></i> Traffic Sources</div></div>
-            <div class="bar-row"><div class="bar-label"><span>Instagram</span><span>42%</span></div><div class="bar-track"><div class="bar-fill" style="width:42%;background:var(--accent)"></div></div></div>
-            <div class="bar-row"><div class="bar-label"><span>Google</span><span>28%</span></div><div class="bar-track"><div class="bar-fill" style="width:28%;background:#60a5fa"></div></div></div>
-            <div class="bar-row"><div class="bar-label"><span>Email</span><span>18%</span></div><div class="bar-track"><div class="bar-fill" style="width:18%;background:#4ade80"></div></div></div>
-            <div class="bar-row"><div class="bar-label"><span>Facebook</span><span>12%</span></div><div class="bar-track"><div class="bar-fill" style="width:12%;background:#a78bfa"></div></div></div>
+            <div class="bar-row"><div class="bar-label"><span>Instagram</span><span>42%</span></div><div class="bar-track"><div class="bar-fill" style="width:42%;background:linear-gradient(90deg,#5c6bc0,#3949ab)"></div></div></div>
+            <div class="bar-row"><div class="bar-label"><span>Google</span><span>28%</span></div><div class="bar-track"><div class="bar-fill" style="width:28%;background:linear-gradient(90deg,#26a69a,#00796b)"></div></div></div>
+            <div class="bar-row"><div class="bar-label"><span>Email</span><span>18%</span></div><div class="bar-track"><div class="bar-fill" style="width:18%;background:linear-gradient(90deg,#ec407a,#c2185b)"></div></div></div>
+            <div class="bar-row"><div class="bar-label"><span>Facebook</span><span>12%</span></div><div class="bar-track"><div class="bar-fill" style="width:12%;background:linear-gradient(90deg,#ffa726,#e65100)"></div></div></div>
           </div>
         </div>
         <div class="panel neu" id="competitor-panel" style="display:none">
@@ -690,7 +730,7 @@ window.generateContent=function(){
   const type=document.getElementById('g-type').value;
   const tone=document.getElementById('g-tone').value;
   const box=document.getElementById('g-output');
-  box.innerHTML='<div class="loading"><div class="dot"></div><div class="dot"></div><div class="dot"></div> Crafting your content...</div>';
+  box.innerHTML='<div style="padding:0.5rem 0"><div class="skeleton skel-line w80"></div><div class="skeleton skel-line w60" style="margin-top:8px"></div><div class="skeleton skel-line w70" style="margin-top:8px"></div><div style="font-size:12px;color:var(--text-dim);margin-top:12px">Crafting your content...</div></div>';
   setTimeout(async()=>{
     const result=buildContent(null,type,tone);
     box.innerHTML=`<button class="btn copy-btn" onclick="doCopy()"><i data-lucide="copy"></i> Copy</button><span id="g-text">${result.replace(/\n/g,'<br>')}</span>`;
@@ -718,7 +758,7 @@ window.selectTemplate=function(el,id,plan){
   const tpl=TEMPLATES.find(t=>t.id===id);
   if(tpl){const sel=document.getElementById('g-type');if(sel)for(let o of sel.options){if(o.value===tpl.platform){sel.value=tpl.platform;break;}}}
   const box=document.getElementById('g-output');
-  box.innerHTML='<div class="loading"><div class="dot"></div><div class="dot"></div><div class="dot"></div> Crafting your content...</div>';
+  box.innerHTML='<div style="padding:0.5rem 0"><div class="skeleton skel-line w80"></div><div class="skeleton skel-line w60" style="margin-top:8px"></div><div class="skeleton skel-line w70" style="margin-top:8px"></div><div style="font-size:12px;color:var(--text-dim);margin-top:12px">Crafting your content...</div></div>';
   setTimeout(async()=>{
     const result=buildContent(id,document.getElementById('g-type').value,document.getElementById('g-tone').value);
     box.innerHTML=`<button class="btn copy-btn" onclick="doCopy()"><i data-lucide="copy"></i> Copy</button><span id="g-text">${result.replace(/\n/g,'<br>')}</span>`;
