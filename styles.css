@@ -407,7 +407,9 @@ textarea.modal-input { resize: vertical; min-height: 80px; }
 .mobile-topbar { display: none; }
 .bottom-nav { display: none; }
 .burger-btn { display: none; }
-.mobile-overlay { display: none; }
+.mobile-overlay { display: none !important; }
+.mobile-drawer { display: none; }
+.mobile-drawer.open { display: flex; }
 
 @media (max-width: 1100px) {
   .closet-grid, .portfolio-grid, .listing-grid { grid-template-columns: repeat(3,1fr); }
@@ -465,20 +467,23 @@ textarea.modal-input { resize: vertical; min-height: 80px; }
 
   /* ── Mobile overlay ── */
   .mobile-overlay {
-    display: none; position: fixed; inset: 0;
+    display: none !important;
+    position: fixed; inset: 0;
     background: rgba(0,0,0,0.6); backdrop-filter: blur(6px);
-    z-index: 98; transition: opacity 0.3s;
+    z-index: 98;
   }
-  .mobile-overlay.open { display: block; animation: fadeOverlay 0.25s ease; }
+  .mobile-overlay.open { display: block !important; animation: fadeOverlay 0.25s ease; }
   @keyframes fadeOverlay { from { opacity: 0; } to { opacity: 1; } }
 
   /* ── Mobile drawer (slides in from left) ── */
   .mobile-drawer {
+    display: flex;
+    flex-direction: column;
     position: fixed; top: 0; left: -300px; width: 280px; height: 100vh;
     background: rgba(10,10,12,0.98); backdrop-filter: blur(30px);
     border-right: 1px solid var(--glass-border);
     z-index: 99; padding: 28px 20px;
-    display: flex; flex-direction: column; gap: 4px;
+    gap: 4px;
     transition: left 0.32s cubic-bezier(0.4,0,0.2,1);
     overflow-y: auto;
   }
