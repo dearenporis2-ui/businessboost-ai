@@ -193,6 +193,8 @@ function updateUserUI() {
 
   // Portfolio screen
   updatePortfolioUI();
+  // Mobile drawer
+  updateDrawerUI();
 }
 
 function updatePortfolioUI() {
@@ -1212,6 +1214,69 @@ function showToast(msg, type = 'info') {
 }
 
 
+
+// ═══════════════════════════════════════════
+// MOBILE BURGER DRAWER
+// ═══════════════════════════════════════════
+function toggleMobileDrawer() {
+  const drawer = document.getElementById('mobileDrawer');
+  const overlay = document.getElementById('mobileOverlay');
+  const burger = document.getElementById('burgerBtn');
+  const isOpen = drawer.classList.contains('open');
+  if (isOpen) {
+    closeMobileDrawer();
+  } else {
+    drawer.classList.add('open');
+    overlay.classList.add('open');
+    burger.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+function closeMobileDrawer() {
+  const drawer = document.getElementById('mobileDrawer');
+  const overlay = document.getElementById('mobileOverlay');
+  const burger = document.getElementById('burgerBtn');
+  drawer.classList.remove('open');
+  overlay.classList.remove('open');
+  burger.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function drawerNav(screenId) {
+  closeMobileDrawer();
+  switchScreen(screenId);
+  // Update drawer active state
+  document.querySelectorAll('.drawer-nav-item').forEach(el => {
+    el.classList.toggle('active', el.dataset.screen === screenId);
+  });
+}
+
+function updateDrawerUI() {
+  if (!currentUserData) return;
+  const initials = (currentUserData.displayName || currentUserData.username || 'U').substring(0,2).toUpperCase();
+  const gbDisplay = Number(currentUserData.goldBlocks || 0).toLocaleString() + ' GB';
+
+  const drawerAvatar = document.getElementById('drawerAvatar');
+  if (drawerAvatar) {
+    drawerAvatar.textContent = initials;
+    if (currentUserData.avatarUrl) {
+      drawerAvatar.innerHTML = `<img src="${currentUserData.avatarUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+    }
+  }
+  const drawerName = document.getElementById('drawerName');
+  const drawerHandle = document.getElementById('drawerHandle');
+  const drawerGB = document.getElementById('drawerGBBalance');
+  if (drawerName) drawerName.textContent = currentUserData.displayName || currentUserData.username;
+  if (drawerHandle) drawerHandle.textContent = '@' + currentUserData.username;
+  if (drawerGB) drawerGB.textContent = gbDisplay;
+
+  // Show admin nav in drawer if admin
+  if (currentUserData.isAdmin) {
+    document.querySelectorAll('.drawer-nav-item.admin-only').forEach(el => el.style.display = 'flex');
+  }
+}
+
 // ═══════════════════════════════════════════
 // CUSTOM SELECT DROPDOWNS
 // ═══════════════════════════════════════════
@@ -1292,4 +1357,7 @@ window.adminSettleDebt = adminSettleDebt;
 window.copyProfileLink = copyProfileLink;
 window.showToast = showToast;
 window.toggleCS = toggleCS;
+window.toggleMobileDrawer = toggleMobileDrawer;
+window.closeMobileDrawer = closeMobileDrawer;
+window.drawerNav = drawerNav;
 window.selectCS = selectCS;
