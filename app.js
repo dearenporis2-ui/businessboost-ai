@@ -1222,13 +1222,17 @@ function toggleMobileDrawer() {
   const drawer = document.getElementById('mobileDrawer');
   const overlay = document.getElementById('mobileOverlay');
   const burger = document.getElementById('burgerBtn');
+  if (!drawer) return;
   const isOpen = drawer.classList.contains('open');
   if (isOpen) {
     closeMobileDrawer();
   } else {
+    drawer.style.display = 'flex';
+    drawer.style.left = '0';
     drawer.classList.add('open');
+    overlay.style.display = 'block';
     overlay.classList.add('open');
-    burger.classList.add('open');
+    if (burger) burger.classList.add('open');
     document.body.style.overflow = 'hidden';
   }
 }
@@ -1237,9 +1241,18 @@ function closeMobileDrawer() {
   const drawer = document.getElementById('mobileDrawer');
   const overlay = document.getElementById('mobileOverlay');
   const burger = document.getElementById('burgerBtn');
+  if (!drawer) return;
+  drawer.style.left = '-300px';
+  // After animation ends, hide it
+  setTimeout(() => {
+    if (!drawer.classList.contains('open')) {
+      drawer.style.display = 'none';
+    }
+  }, 350);
   drawer.classList.remove('open');
+  overlay.style.display = 'none';
   overlay.classList.remove('open');
-  burger.classList.remove('open');
+  if (burger) burger.classList.remove('open');
   document.body.style.overflow = '';
 }
 
