@@ -12,8 +12,19 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <!-- QR Code Scanner -->
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <style>
+    /* Critical: hide everything instantly before external CSS loads */
+    body { background: #080809; color: #fff; font-family: Inter, sans-serif; margin: 0; }
+    #appWrap { display: none; }
+    .mobile-drawer { display: none !important; }
+    .mobile-overlay { display: none !important; }
+    .mobile-topbar { display: none; }
+    .bottom-nav { display: none; }
+    /* Prevent flash of unstyled content */
+    * { box-sizing: border-box; }
+  </style>
 </head>
-<body>
+<body style="background:#080809;">
 
 <!-- ═══════════════════════════════════════
      AUTH SCREENS (shown before login)
@@ -62,10 +73,10 @@
 <div id="appWrap" style="display:none">
 
 <!-- MOBILE OVERLAY -->
-<div class="mobile-overlay" id="mobileOverlay" onclick="closeMobileDrawer()"></div>
+<div class="mobile-overlay" id="mobileOverlay" onclick="closeMobileDrawer()" style="display:none"></div>
 
 <!-- MOBILE DRAWER -->
-<div class="mobile-drawer" id="mobileDrawer">
+<div class="mobile-drawer" id="mobileDrawer" style="display:none">
   <div class="drawer-logo">ST<span>A</span>SH</div>
   <div class="drawer-nav-item active" data-screen="dashboard" onclick="drawerNav('dashboard')"><i class="ti ti-layout-grid"></i>My Stash</div>
   <div class="drawer-nav-item" data-screen="marketplace" onclick="drawerNav('marketplace')"><i class="ti ti-world"></i>Marketplace</div>
