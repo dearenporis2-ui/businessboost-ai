@@ -59,6 +59,49 @@
 <!-- ═══════════════════════════════════════
      MAIN APP (shown after login)
 ═══════════════════════════════════════ -->
+<!-- MOBILE OVERLAY -->
+<div class="mobile-overlay" id="mobileOverlay" onclick="closeMobileDrawer()"></div>
+
+<!-- MOBILE DRAWER -->
+<div class="mobile-drawer" id="mobileDrawer">
+  <div class="drawer-logo">ST<span>A</span>SH</div>
+  <div class="drawer-nav-item active" data-screen="dashboard" onclick="drawerNav('dashboard')"><i class="ti ti-layout-grid"></i>My Stash</div>
+  <div class="drawer-nav-item" data-screen="marketplace" onclick="drawerNav('marketplace')"><i class="ti ti-world"></i>Marketplace</div>
+  <div class="drawer-nav-item" data-screen="shop" onclick="drawerNav('shop')"><i class="ti ti-shopping-bag"></i>Exotic Shop</div>
+  <div class="drawer-nav-item" data-screen="leaderboard" onclick="drawerNav('leaderboard')"><i class="ti ti-trophy"></i>Leaderboard</div>
+  <div class="drawer-nav-item" data-screen="portfolio" onclick="drawerNav('portfolio')"><i class="ti ti-user"></i>Public Profile</div>
+  <div class="drawer-nav-item" data-screen="trades" onclick="drawerNav('trades')"><i class="ti ti-arrows-exchange"></i>My Trades</div>
+  <div class="drawer-nav-item admin-only" data-screen="admin" style="display:none" onclick="drawerNav('admin')"><i class="ti ti-shield"></i>Admin Panel</div>
+  <button class="drawer-add-btn" onclick="closeMobileDrawer(); openListingModal();"><i class="ti ti-plus"></i>List an Item</button>
+  <div class="drawer-bottom">
+    <div class="drawer-user">
+      <div class="avatar" id="drawerAvatar"></div>
+      <div>
+        <div class="drawer-user-name" id="drawerName">Loading...</div>
+        <div class="drawer-user-handle" id="drawerHandle">@...</div>
+      </div>
+    </div>
+    <div class="drawer-wallet"><span class="gb-icon">🟨</span><span id="drawerGBBalance">0 GB</span></div>
+    <button class="drawer-signout" onclick="handleLogout()"><i class="ti ti-logout"></i>Sign Out</button>
+  </div>
+</div>
+
+<!-- MOBILE TOP BAR -->
+<div class="mobile-topbar">
+  <div class="burger-btn" id="burgerBtn" onclick="toggleMobileDrawer()">
+    <div class="burger-line"></div>
+    <div class="burger-line"></div>
+    <div class="burger-line"></div>
+  </div>
+  <div class="mobile-logo">ST<span>A</span>SH</div>
+  <div class="mobile-right">
+    <div class="wallet-chip" style="padding:7px 12px;font-size:12px;">
+      <span class="gb-icon">🟨</span><span id="mobileGBBalance">0 GB</span>
+    </div>
+    <div class="avatar" id="mobileAvatar" style="width:34px;height:34px;font-size:12px;"></div>
+  </div>
+</div>
+
 <div id="appWrap" style="display:none">
 
   <!-- MOBILE TOP BAR -->
