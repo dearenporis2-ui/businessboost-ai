@@ -409,9 +409,6 @@ textarea.modal-input { resize: vertical; min-height: 80px; }
 .burger-btn { display: none !important; }
 .mobile-overlay { display: none !important; }
 .mobile-drawer { display: none !important; }
-.drawer-logo, .drawer-nav-item, .drawer-add-btn,
-.drawer-bottom, .drawer-user, .drawer-wallet,
-.drawer-signout { display: none; }
 
 
 /* ═══════════════════════════════════════════
