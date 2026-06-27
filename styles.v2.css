@@ -409,8 +409,8 @@ textarea.modal-input { resize: vertical; min-height: 80px; }
 .mobile-topbar  { display: none !important; }
 .bottom-nav     { display: none !important; }
 .burger-btn     { display: none !important; }
-.mobile-overlay { display: none !important; }
-.mobile-drawer  { display: none !important; }
+.mobile-overlay { display: block; position: fixed; inset: 0; background: rgba(0,0,0,0.65); backdrop-filter: blur(4px); z-index: 998; visibility: hidden; }
+.mobile-drawer  { position: fixed; top: 0; left: -300px; display: flex; flex-direction: column; width: 280px; height: 100vh; background: #0d0d0f; z-index: 999; padding: 32px 20px 28px; gap: 4px; overflow-y: auto; transition: left 0.32s cubic-bezier(0.4,0,0.2,1); visibility: hidden; }
 
 /* ══════════════════════════════════════════════
    TABLET  ≤ 1100px
@@ -491,7 +491,7 @@ textarea.modal-input { resize: vertical; min-height: 80px; }
     backdrop-filter: blur(4px);
     z-index: 998;
   }
-  .mobile-overlay.open { display: block !important; }
+  .mobile-overlay.open { visibility: visible !important; }
 
   /* ── drawer ── */
   .mobile-drawer {
@@ -509,7 +509,7 @@ textarea.modal-input { resize: vertical; min-height: 80px; }
     transition: left 0.32s cubic-bezier(0.4,0,0.2,1);
     box-shadow: 4px 0 40px rgba(0,0,0,0.6);
   }
-  .mobile-drawer.open { left: 0 !important; }
+  .mobile-drawer.open { left: 0 !important; visibility: visible !important; }
 
   /* ── drawer contents ── */
   .drawer-logo {
