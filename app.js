@@ -361,7 +361,7 @@ function renderTopShelfCard(l, featured = false) {
     : getCategoryEmoji(l.category);
   return `
     <div class="glass-card ${frameClass}${featured ? '' : ''}" style="${featured ? 'grid-column:span 1' : ''}">
-      <div class="quick-edit-btn" onclick="deleteListing('${l.id}')"><i class="ti ti-trash"></i></div>
+      <div class="quick-edit-btn" onclick="openConfirmDelete('${l.id}')"><i class="ti ti-trash"></i></div>
       ${getFrameBadge(l.frame)}
       <div class="item-img tall">${imgContent}</div>
       <div class="item-name">${escHtml(l.name)}</div>
@@ -714,13 +714,7 @@ async function submitListing() {
 }
 
 async function deleteListing(listingId) {
-  if (!confirm('Remove this listing?')) return;
-  try {
-    await deleteDoc(doc(db, 'listings', listingId));
-    showToast('Listing removed', 'info');
-  } catch (err) {
-    showToast('Error: ' + err.message, 'error');
-  }
+  openConfirmDelete(listingId);
 }
 
 // ═══════════════════════════════════════════
@@ -1279,6 +1273,84 @@ function updateDrawerUI() {
   }
 }
 
+
+// ═══════════════════════════════════════════
+// EDIT PROFILE
+// ═══════════════════════════════════════════
+function openEditProfile() {
+  if (!currentUserData) return;
+  document.getElementById('editDisplayName').value = currentUserData.displayName || '';
+  document.getElementById('editBio').value = currentUserData.bio || '';
+  document.getElementById('editAvatarUrl').value = currentUserData.avatarUrl || '';
+
+  const preview = document.getElementById('profilePhotoPreview');
+  if (currentUserData.avatarUrl) {
+    preview.innerHTML = `<img src="${currentUserData.avatarUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:12px">`;
+  } else {
+    preview.innerHTML = `<i class="ti ti-camera" style="font-size:24px;color:rgba(255,255,255,0.4)"></i><span style="font-size:13px;color:rgba(255,255,255,0.4)">Upload profile photo</span>`;
+  }
+  document.getElementById('editProfileModal').classList.add('open');
+}
+
+function closeEditProfile() {
+  document.getElementById('editProfileModal').classList.remove('open');
+}
+
+function triggerProfilePhotoUpload() {
+  openUploadWidget((url) => {
+    document.getElementById('editAvatarUrl').value = url;
+    const preview = document.getElementById('profilePhotoPreview');
+    preview.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:12px">`;
+  });
+}
+
+async function saveProfile() {
+  if (!currentUser) return;
+  const displayName = document.getElementById('editDisplayName').value.trim();
+  const bio = document.getElementById('editBio').value.trim();
+  const avatarUrl = document.getElementById('editAvatarUrl').value;
+
+  if (!displayName) return showToast('Display name cannot be empty', 'error');
+
+  try {
+    await updateDoc(doc(db, 'users', currentUser.uid), {
+      displayName,
+      bio,
+      avatarUrl
+    });
+    closeEditProfile();
+    showToast('Profile updated!', 'success');
+  } catch (err) {
+    showToast('Error saving profile: ' + err.message, 'error');
+  }
+}
+
+// ═══════════════════════════════════════════
+// CONFIRM DELETE LISTING
+// ═══════════════════════════════════════════
+let pendingDeleteId = null;
+
+function openConfirmDelete(listingId) {
+  pendingDeleteId = listingId;
+  document.getElementById('confirmDeleteModal').classList.add('open');
+}
+
+function closeConfirmDelete() {
+  pendingDeleteId = null;
+  document.getElementById('confirmDeleteModal').classList.remove('open');
+}
+
+async function confirmDelete() {
+  if (!pendingDeleteId) return;
+  try {
+    await deleteDoc(doc(db, 'listings', pendingDeleteId));
+    closeConfirmDelete();
+    showToast('Listing removed', 'info');
+  } catch (err) {
+    showToast('Error: ' + err.message, 'error');
+  }
+}
+
 // ═══════════════════════════════════════════
 // CUSTOM SELECT DROPDOWNS
 // ═══════════════════════════════════════════
@@ -1328,6 +1400,8 @@ document.addEventListener('click', (e) => {
 document.getElementById('sheetOverlay')?.addEventListener('click', e => { if (e.target === document.getElementById('sheetOverlay')) closeSheet(); });
 document.getElementById('slideModal')?.addEventListener('click', e => { if (e.target === document.getElementById('slideModal')) closeSlideModal(); });
 document.getElementById('listingModal')?.addEventListener('click', e => { if (e.target === document.getElementById('listingModal')) closeListingModal(); });
+document.getElementById('editProfileModal')?.addEventListener('click', e => { if (e.target === document.getElementById('editProfileModal')) closeEditProfile(); });
+document.getElementById('confirmDeleteModal')?.addEventListener('click', e => { if (e.target === document.getElementById('confirmDeleteModal')) closeConfirmDelete(); });
 document.getElementById('qrModal')?.addEventListener('click', e => { if (e.target === document.getElementById('qrModal')) closeQRModal(); });
 
 // ── Expose functions to HTML onclick
@@ -1358,6 +1432,13 @@ window.adminCreditGB = adminCreditGB;
 window.adminSettleDebt = adminSettleDebt;
 window.copyProfileLink = copyProfileLink;
 window.showToast = showToast;
+window.openEditProfile = openEditProfile;
+window.closeEditProfile = closeEditProfile;
+window.triggerProfilePhotoUpload = triggerProfilePhotoUpload;
+window.saveProfile = saveProfile;
+window.openConfirmDelete = openConfirmDelete;
+window.closeConfirmDelete = closeConfirmDelete;
+window.confirmDelete = confirmDelete;
 window.toggleCS = toggleCS;
 window.toggleMobileDrawer = toggleMobileDrawer;
 window.closeMobileDrawer = closeMobileDrawer;
