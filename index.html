@@ -26,6 +26,134 @@
     /* Prevent flash of unstyled content */
     * { box-sizing: border-box; }
   </style>
+  <style>
+    /* ── DRAWER OVERRIDE — loaded inline, highest priority ── */
+    @media (max-width: 900px) {
+      .mobile-drawer {
+        visibility: visible !important;
+        display: flex !important;
+        flex-direction: column !important;
+        position: fixed !important;
+        top: 0 !important;
+        left: -300px !important;
+        width: 280px !important;
+        height: 100vh !important;
+        background: #0d0d0f !important;
+        border-right: 1px solid rgba(212,160,23,0.4) !important;
+        z-index: 9999 !important;
+        padding: 32px 20px 28px !important;
+        gap: 4px !important;
+        overflow-y: auto !important;
+        box-shadow: 4px 0 40px rgba(0,0,0,0.7) !important;
+        transition: left 0.32s cubic-bezier(0.4,0,0.2,1) !important;
+      }
+      .mobile-drawer.open {
+        left: 0 !important;
+      }
+      .mobile-overlay {
+        display: none;
+        position: fixed !important;
+        inset: 0 !important;
+        background: rgba(0,0,0,0.65) !important;
+        backdrop-filter: blur(4px) !important;
+        z-index: 9998 !important;
+      }
+      .mobile-overlay.open {
+        display: block !important;
+      }
+      .drawer-logo {
+        display: block !important;
+        font-size: 24px !important;
+        font-weight: 900 !important;
+        color: #fff !important;
+        margin-bottom: 28px !important;
+      }
+      .drawer-logo span { color: #D4A017 !important; }
+      .drawer-nav-item {
+        display: flex !important;
+        align-items: center !important;
+        gap: 12px !important;
+        padding: 13px 14px !important;
+        border-radius: 14px !important;
+        font-size: 15px !important;
+        font-weight: 600 !important;
+        color: rgba(255,255,255,0.5) !important;
+        cursor: pointer !important;
+        border: 1px solid transparent !important;
+        transition: all 0.2s !important;
+      }
+      .drawer-nav-item:hover {
+        background: rgba(255,255,255,0.05) !important;
+        color: #fff !important;
+      }
+      .drawer-nav-item.active {
+        background: rgba(212,160,23,0.12) !important;
+        color: #D4A017 !important;
+        border-color: rgba(212,160,23,0.4) !important;
+      }
+      .drawer-nav-item i { font-size: 20px !important; }
+      .drawer-add-btn {
+        display: flex !important;
+        align-items: center !important;
+        gap: 10px !important;
+        margin-top: 8px !important;
+        padding: 14px !important;
+        border-radius: 14px !important;
+        font-size: 14px !important;
+        font-weight: 700 !important;
+        color: #080809 !important;
+        background: #D4A017 !important;
+        border: none !important;
+        cursor: pointer !important;
+        width: 100% !important;
+        font-family: Inter, sans-serif !important;
+      }
+      .drawer-bottom {
+        display: block !important;
+        margin-top: auto !important;
+        padding-top: 20px !important;
+        border-top: 1px solid rgba(255,255,255,0.1) !important;
+      }
+      .drawer-user {
+        display: flex !important;
+        align-items: center !important;
+        gap: 12px !important;
+        padding: 10px 8px !important;
+      }
+      .drawer-user-name { display: block !important; font-size: 13px !important; font-weight: 700 !important; color: #fff !important; }
+      .drawer-user-handle { display: block !important; font-size: 11px !important; color: rgba(255,255,255,0.4) !important; }
+      .drawer-wallet {
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        background: rgba(212,160,23,0.12) !important;
+        border: 1px solid rgba(212,160,23,0.4) !important;
+        border-radius: 24px !important;
+        padding: 9px 14px !important;
+        font-size: 13px !important;
+        font-weight: 700 !important;
+        color: #D4A017 !important;
+        margin-top: 10px !important;
+        justify-content: center !important;
+      }
+      .drawer-signout {
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        background: transparent !important;
+        border: 1px solid rgba(255,255,255,0.1) !important;
+        border-radius: 12px !important;
+        padding: 11px 14px !important;
+        font-size: 13px !important;
+        font-weight: 700 !important;
+        color: rgba(255,255,255,0.4) !important;
+        cursor: pointer !important;
+        width: 100% !important;
+        margin-top: 8px !important;
+        font-family: Inter, sans-serif !important;
+      }
+    }
+  </style>
 </head>
 <body style="background:#080809;">
 
