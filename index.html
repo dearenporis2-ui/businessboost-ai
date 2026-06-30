@@ -156,6 +156,55 @@
   </style>
 </head>
 <body style="background:#080809;">
+<!-- ═══════════════════════════════════════
+     LOADING SCREEN
+═══════════════════════════════════════ -->
+<div id="loadingScreen" style="
+  position: fixed; inset: 0; z-index: 99999;
+  background: #080809;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 24px;
+  transition: opacity 0.6s ease, transform 0.6s ease;
+">
+  <!-- Animated logo -->
+  <div style="text-align:center">
+    <div id="loadingLogo" style="
+      font-family: Inter, sans-serif;
+      font-size: 52px; font-weight: 900;
+      letter-spacing: -2px; color: #fff;
+      opacity: 0; transform: translateY(20px);
+      transition: all 0.6s cubic-bezier(0.4,0,0.2,1);
+    ">ST<span style="color:#D4A017">A</span>SH</div>
+    <div id="loadingTagline" style="
+      font-family: Inter, sans-serif;
+      font-size: 13px; font-weight: 600;
+      letter-spacing: 3px; text-transform: uppercase;
+      color: rgba(255,255,255,0.35); margin-top: 8px;
+      opacity: 0; transition: all 0.6s ease 0.3s;
+    ">The Premium Collector Platform</div>
+  </div>
+
+  <!-- Gold animated bar -->
+  <div style="width: 120px; height: 2px; background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden; margin-top: 8px;">
+    <div id="loadingBar" style="
+      height: 100%; width: 0%;
+      background: linear-gradient(90deg, #D4A017, #F5C842);
+      border-radius: 2px;
+      transition: width 1.8s cubic-bezier(0.4,0,0.2,1);
+      box-shadow: 0 0 10px rgba(212,160,23,0.6);
+    "></div>
+  </div>
+
+  <!-- Ambient glow -->
+  <div style="
+    position: absolute; inset: 0; pointer-events: none;
+    background:
+      radial-gradient(ellipse 60% 40% at 50% 50%, rgba(212,160,23,0.06) 0%, transparent 70%);
+  "></div>
+</div>
+
+
 
 <!-- ═══════════════════════════════════════
      AUTH SCREENS (shown before login)
@@ -626,6 +675,14 @@
           </div>
         </div>
       </div>
+      <div class="modal-group" style="grid-column:span 2">
+        <div class="modal-label">Contact for Buyers</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <input class="modal-input" id="listingWhatsApp" type="text" placeholder="WhatsApp e.g. +2482510123" />
+          <input class="modal-input" id="listingInstagram" type="text" placeholder="Instagram @handle" />
+        </div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.35);margin-top:6px">At least one is required so buyers can reach you.</div>
+      </div>
       <div class="modal-group" style="grid-column:span 2" id="specFieldsWrap"></div>
       <div class="modal-group" style="grid-column:span 2">
         <div class="modal-label">Description</div>
@@ -673,10 +730,13 @@
       <button style="display:flex;align-items:center;justify-content:center;gap:10px;border-radius:16px;padding:17px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;background:var(--glass-gold);border:1px solid var(--glass-gold-border);color:var(--gold)" onclick="reserveItem()">
         <span class="gb-icon">🟨</span>Reserve Item
       </button>
-      <button style="display:flex;align-items:center;justify-content:center;gap:10px;border-radius:16px;padding:17px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;background:rgba(37,211,102,0.09);border:1px solid rgba(37,211,102,0.28);color:#4ade80" onclick="closeSheet()">
+      <a id="sheetWaBtn" href="#" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;gap:10px;border-radius:16px;padding:17px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;background:rgba(37,211,102,0.09);border:1px solid rgba(37,211,102,0.28);color:#4ade80;text-decoration:none">
         <i class="ti ti-brand-whatsapp" style="font-size:22px"></i>WhatsApp Seller
-      </button>
+      </a>
     </div>
+    <a id="sheetIgBtn" href="#" target="_blank" rel="noopener" style="display:none;align-items:center;justify-content:center;gap:10px;border-radius:16px;padding:15px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;background:linear-gradient(135deg,rgba(225,48,108,0.14),rgba(131,58,180,0.14));border:1px solid rgba(225,48,108,0.28);color:#f472b6;text-decoration:none;margin-bottom:12px">
+      <i class="ti ti-brand-instagram" style="font-size:20px"></i>Message on Instagram
+    </a>
     <button style="display:flex;align-items:center;justify-content:center;gap:7px;background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:14px;padding:14px;font-size:13px;font-weight:700;color:var(--text-muted);cursor:pointer;transition:all 0.2s;width:100%;font-family:Inter,sans-serif" onclick="closeSheet()">
       <i class="ti ti-x"></i>Close
     </button>
@@ -685,19 +745,57 @@
 
 <!-- QR HANDSHAKE MODAL -->
 <div class="modal-overlay" id="qrModal">
-  <div class="modal-sheet" style="max-width:400px;text-align:center">
+  <div class="modal-sheet" style="max-width:420px;text-align:center">
     <div class="modal-close" onclick="closeQRModal()"><i class="ti ti-x"></i></div>
-    <div class="modal-title" id="qrModalTitle">Safe Zone QR</div>
+    <div class="modal-title" id="qrModalTitle" style="text-align:center">Safe Zone Handshake</div>
+
+    <!-- SELLER VIEW: show QR -->
     <div id="qrSellerView">
-      <div style="font-size:13px;color:var(--text-muted);margin-bottom:20px">Show this QR to the buyer at your Safe Zone meetup</div>
-      <div id="qrCodeDisplay" class="qr-box">Generating...</div>
-      <div class="qr-timer" id="qrTimer">10:00</div>
-      <div class="qr-sub">QR expires in 10 minutes</div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:20px;line-height:1.6">
+        Show this QR code to the buyer at your Safe Zone meetup. It expires in <b style="color:#D4A017">10 minutes</b>.
+      </div>
+      <div id="qrCodeDisplay" style="
+        width:200px;height:200px;background:#fff;border-radius:16px;
+        margin:0 auto 20px;display:flex;align-items:center;
+        justify-content:center;font-size:13px;color:#333;padding:12px;
+        box-shadow: 0 0 30px rgba(212,160,23,0.2);
+      ">Generating...</div>
+      <div id="qrTimer" style="font-size:32px;font-weight:900;color:#D4A017;margin-bottom:6px;letter-spacing:-1px">10:00</div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.4);margin-bottom:20px">QR expires after 10 minutes</div>
+      <div style="background:rgba(212,160,23,0.08);border:1px solid rgba(212,160,23,0.2);border-radius:12px;padding:14px;font-size:12px;color:rgba(255,255,255,0.5);line-height:1.6">
+        🔒 Anti-fraud checks run automatically when buyer scans. GPS, device, and network verified.
+      </div>
     </div>
+
+    <!-- BUYER VIEW: scan QR -->
     <div id="qrBuyerView" style="display:none">
-      <div style="font-size:13px;color:var(--text-muted);margin-bottom:20px">Scan the seller's QR code to complete the trade</div>
-      <div id="qrReader" style="width:100%;border-radius:14px;overflow:hidden"></div>
-      <div style="font-size:12px;color:var(--text-muted);margin-top:12px">GPS verification will run automatically</div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:16px;line-height:1.6">
+        Point your camera at the <b style="color:#D4A017">seller's QR code</b> to verify the trade.
+      </div>
+      <div id="qrReader" style="width:100%;border-radius:14px;overflow:hidden;margin-bottom:16px"></div>
+      <div id="qrScanStatus" style="font-size:13px;color:rgba(255,255,255,0.4)">
+        <i class="ti ti-shield-check" style="color:#D4A017"></i> GPS + device verification runs automatically
+      </div>
+    </div>
+
+    <!-- SUCCESS VIEW -->
+    <div id="qrSuccessView" style="display:none">
+      <div style="font-size:64px;margin-bottom:16px">🎉</div>
+      <div style="font-size:20px;font-weight:800;color:#fff;margin-bottom:8px">Trade Verified!</div>
+      <div style="font-size:14px;color:rgba(255,255,255,0.5);line-height:1.7;margin-bottom:20px">
+        Handshake complete. Your Gold Blocks have been refunded and Trader Rep updated.
+      </div>
+      <button class="modal-btn" onclick="closeQRModal()">Done</button>
+    </div>
+
+    <!-- FAIL VIEW -->
+    <div id="qrFailView" style="display:none">
+      <div style="font-size:64px;margin-bottom:16px">🚨</div>
+      <div style="font-size:18px;font-weight:800;color:#ff4d4d;margin-bottom:8px">Verification Failed</div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.5);line-height:1.7;margin-bottom:20px" id="qrFailReason">
+        Anti-fraud checks did not pass.
+      </div>
+      <button class="modal-btn" style="background:#ff4d4d" onclick="closeQRModal()">Close</button>
     </div>
   </div>
 </div>
