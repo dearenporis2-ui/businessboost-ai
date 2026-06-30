@@ -708,7 +708,7 @@ function openListingModal() {
 function closeListingModal() {
   document.getElementById('listingModal').classList.remove('open');
   // Reset form
-  ['listingName','listingPrice','listingDesc','listingImageUrl'].forEach(id => {
+  ['listingName','listingPrice','listingDesc','listingImageUrl','listingWhatsApp','listingInstagram'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.value = '';
   });
@@ -741,10 +741,15 @@ async function submitListing() {
   const desc = document.getElementById('listingDesc').value.trim();
   const imageUrl = document.getElementById('listingImageUrl').value;
   const pinned = document.getElementById('listingPinned').checked;
+  const whatsapp = document.getElementById('listingWhatsApp').value.trim();
+  const instagram = document.getElementById('listingInstagram').value.trim();
 
   if (!name) return showToast('Please enter an item name', 'error');
   if (!price || isNaN(price)) return showToast('Please enter a valid price', 'error');
   if (!category) return showToast('Please select a category', 'error');
+  if (intent !== 'grail' && !whatsapp && !instagram) {
+    return showToast('Add a WhatsApp number or Instagram so buyers can reach you', 'error');
+  }
 
   // Collect spec fields
   const specs = {};
@@ -765,6 +770,8 @@ async function submitListing() {
       imageUrl: imageUrl || '',
       specs,
       pinned,
+      whatsapp: whatsapp || '',
+      instagram: instagram || '',
       sellerId: currentUser.uid,
       sellerUsername: currentUserData.username,
       sellerDisplayName: currentUserData.displayName || currentUserData.username,
@@ -813,6 +820,8 @@ async function openSheet(listingId) {
     if (actionBtns) actionBtns.style.display = 'none';
     if (actionLabel) actionLabel.style.display = 'none';
     if (grailNotice) grailNotice.style.display = 'block';
+    const igBtnHide = document.getElementById('sheetIgBtn');
+    if (igBtnHide) igBtnHide.style.display = 'none';
   } else {
     if (pitch) pitch.style.display = '';
     if (actionBtns) actionBtns.style.display = '';
@@ -822,6 +831,35 @@ async function openSheet(listingId) {
       ? `"Yo! I saw your <b>${escHtml(l.name)}</b> on Stash — I've got heat to swap. Let's talk."`
       : `"Yo! I saw your <b>${escHtml(l.name)}</b> on Stash. What's your best price?"`;
     if (pitchText) pitchText.innerHTML = msg;
+
+    const plainMsg = l.intent === 'trade'
+      ? `Yo! I saw your ${l.name} on Stash — I've got heat to swap. Let's talk.`
+      : `Yo! I saw your ${l.name} on Stash. What's your best price?`;
+
+    const waBtn = document.getElementById('sheetWaBtn');
+    if (waBtn) {
+      if (l.whatsapp) {
+        const cleanNumber = l.whatsapp.replace(/[^0-9]/g, '');
+        waBtn.href = `https://wa.me/${cleanNumber}?text=${encodeURIComponent(plainMsg)}`;
+        waBtn.style.opacity = '1';
+        waBtn.style.pointerEvents = 'auto';
+      } else {
+        waBtn.removeAttribute('href');
+        waBtn.style.opacity = '0.4';
+        waBtn.style.pointerEvents = 'none';
+      }
+    }
+
+    const igBtn = document.getElementById('sheetIgBtn');
+    if (igBtn) {
+      if (l.instagram) {
+        const handle = l.instagram.replace('@', '').trim();
+        igBtn.href = `https://instagram.com/${handle}`;
+        igBtn.style.display = 'flex';
+      } else {
+        igBtn.style.display = 'none';
+      }
+    }
   }
   document.getElementById('sheetOverlay').classList.add('open');
   document.body.style.overflow = 'hidden';
